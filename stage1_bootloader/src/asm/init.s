@@ -30,5 +30,30 @@ true_start:
     mov     es, ax
     mov     ss, ax
 
+    # Clear Screen and set video mode to 2
+    mov     ah, 0
+    mov     al, 2
+    int     0x10
+
+    # Print Hello World Using BIOS
+    xor ax, ax
+    mov es, ax
+    xor bh, bh
+    lea bp, hello
+
+    mov ah, 0x13
+    mov bl, 0x4 # red foreground
+    mov al, 1
+    mov cx, [hello_len]
+    mov dh, 0 # y
+    mov dl, 0 # x
+    int 0x10
+
+
 here:
     jmp here
+
+hello: .ascii "Hello World"
+        .byte 0
+hello_len: .word $-hello
+
