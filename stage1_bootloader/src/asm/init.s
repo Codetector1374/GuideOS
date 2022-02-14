@@ -23,6 +23,7 @@ start:
 
 true_start:
     cli     # disable interrupts
+    cld
 
     # We zero the segment registers
     xor     ax, ax
@@ -30,30 +31,97 @@ true_start:
     mov     es, ax
     mov     ss, ax
 
-    # Clear Screen and set video mode to 2
+    mov     sp, 0x7C00   # SP is loaded with 0x7C00, we can use all that memory below code as stack.
+
+# We need to store our drive number onto the stack (DL)
+    push   dx   # Let's just push the entire DX register
+
+# Clear Screen and set video mode to 2
     mov     ah, 0
     mov     al, 2
     int     0x10
 
-    # Print Hello World Using BIOS
-    xor ax, ax
-    mov es, ax
-    xor bh, bh
-    lea bp, hello
+    lea si, loading_string
+    call print_string
 
-    mov ah, 0x13
-    mov bl, 0x4 # red foreground
-    mov al, 1
-    mov cx, [hello_len]
-    mov dh, 0 # y
-    mov dl, 0 # x
-    int 0x10
+#
+# Now that we are done printing, we can restore our DX register
+# and prepare for the BIOS call to load the next few sectors to
+# memory.
+#
+# First test to make sure LBA addressing mode is supported. This
+# is generally not supported on floppy drives
+#
+    mov ah, 0x41
+    mov bx, 0x55aa
+    int 0x13
+    jc error_no_ext_load
+    cmp bx, 0xaa55
+    jnz error_no_ext_load
+
+# If all is well, we will load the first 64x(512B) blocks to 0x7E00
+
+    lea si, disk_address_block
+    mov ah, 0x42
+    int 0x13
+    jc  error_load # Carry is set if there is error while loading
+    lea si, success_str
+    call print_string
 
 
-here:
-    jmp here
+end:
+    hlt
+    jmp end
 
-hello: .ascii "Hello World"
-        .byte 0
-hello_len: .word $-hello
+error_no_ext_load:
+    lea si, error_str_no_ext
+    call print_string
+    jmp end
+
+error_load:
+    lea si, error_str_load
+    call print_string
+    jmp end
+
+# Print string pointed to by DS:SI using
+# BIOS TTY output via int 10h/AH=0eh
+
+print_string:
+    push ax
+    push si
+    push bx
+    xor bx, bx
+    mov ah, 0xe       # int 10h 'print char' function
+
+repeat:
+    lods al, [si]           # Get character from string
+    test al, al
+    je done      # If char is zero, end of string
+    int 0x10           # Otherwise, print it
+    jmp repeat
+done:
+    pop bx
+    pop si
+    pop ax
+    ret
+
+loading_string:
+    .ascii "Loading Stage 2\r\n"
+    .byte 0
+error_str_no_ext:
+    .ascii "no EXT load\r\n"
+    .byte 0
+error_str_load:
+    .ascii "Failed to load sectors\r\n"
+    .byte 0
+success_str:
+    .ascii "Stage 2 Loaded. Now starting Stage2\r\n"
+    .byte 0
+
+disk_address_block:
+    .byte       0x10    # length of this block
+    .byte       0x0     # reserved
+    .short      64      # number of blocks = 32k/512b = 64
+    .long       0x07E00000  # Target memory address
+    .quad       1       # Starting Disk block 1, since we just need to skip the boot sector.
 
