@@ -41,8 +41,8 @@ true_start:
     mov     al, 2
     int     0x10
 
-    lea si, loading_string
-    call print_string
+    mov     si, OFFSET loading_string
+    call    print_string
 
 #
 # Now that we are done printing, we can restore our DX register
@@ -52,53 +52,55 @@ true_start:
 # First test to make sure LBA addressing mode is supported. This
 # is generally not supported on floppy drives
 #
-    mov ah, 0x41
-    mov bx, 0x55aa
-    int 0x13
-    jc error_no_ext_load
-    cmp bx, 0xaa55
-    jnz error_no_ext_load
+    mov     ah, 0x41
+    mov     bx, 0x55aa
+    int     0x13
+    jc      error_no_ext_load
+    cmp     bx, 0xaa55
+    jnz     error_no_ext_load
 
 # If all is well, we will load the first 64x(512B) blocks to 0x7E00
 
-    lea si, disk_address_block
-    mov ah, 0x42
-    int 0x13
-    jc  error_load # Carry is set if there is error while loading
-    lea si, success_str
-    call print_string
+    mov     si, offset disk_address_block
+    mov     ah, 0x42
+    int     0x13
+    jc      error_load # Carry is set if there is error while loading
+    mov     si, offset success_str
+    call    print_string
 
-
+# goto stage 2
+    pop     dx
+    jmp     0:0x7E00
 end:
     hlt
-    jmp end
+    jmp     end
 
 error_no_ext_load:
-    lea si, error_str_no_ext
-    call print_string
-    jmp end
+    mov     si, offset error_str_no_ext
+    call    print_string
+    jmp     end
 
 error_load:
-    lea si, error_str_load
-    call print_string
-    jmp end
+    mov     si, offset error_str_load
+    call    print_string
+    jmp     end
 
 # Print string pointed to by DS:SI using
 # BIOS TTY output via int 10h/AH=0eh
 
 print_string:
-    push ax
-    push si
-    push bx
-    xor bx, bx
-    mov ah, 0xe       # int 10h 'print char' function
+    push    ax
+    push    si
+    push    bx
+    xor     bx, bx
+    mov     ah, 0xe       # int 10h 'print char' function
 
 repeat:
-    lods al, [si]           # Get character from string
-    test al, al
-    je done      # If char is zero, end of string
-    int 0x10           # Otherwise, print it
-    jmp repeat
+    lods    al, [si]   # Get character from string
+    test    al, al
+    je      done         # If char is zero, end of string
+    int     0x10           # Otherwise, print it
+    jmp     repeat
 done:
     pop bx
     pop si
