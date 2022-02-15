@@ -4,8 +4,11 @@
 # Set to 16-bit code mode. Since we are going to start in 16-bit real mode.
 .code16
 .globl stage2
+.globl cputs
 
-.section .text
+.extern c_entry
+
+.section .text.start
 
 stage2:
     cli     # disable interrupts
@@ -25,9 +28,21 @@ stage2:
     lea     si, loading_string
     call    print_string
 
+    call    c_entry
+
 end:
     hlt
     jmp     end
+
+cputs:
+    push    bp
+    mov     bp, sp
+    push    si
+    mov     si, [bp+6]
+    call print_string
+    pop     si
+    pop     bp
+    ret
 
 print_string:
     push    ax

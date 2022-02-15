@@ -1,11 +1,12 @@
-
-project(stage2_bootloader ASM)
+project(stage2_bootloader ASM C)
 
 add_library(stage2Bootloader OBJECT
-        src/asm/stage2.s)
+        src/test.c
+        src/asm/stage2.s
+)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -fno-builtin -fno-pic -nostdinc -m64")
-set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "-static -fno-builtin -fno-pic -nostdinc -m16")
+set(CMAKE_ASM_FLAGS "-m32")
 
 set(CMAKE_C_FLAGS_RELEASE "-Os")
 set(CMAKE_C_FLAGS_DEBUG "-Os -ggdb3")
@@ -13,12 +14,14 @@ set(CMAKE_C_FLAGS_DEBUG "-Os -ggdb3")
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj
-        COMMAND ${CMAKE_LINKER} -m elf_x86_64 -T ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld -o ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj $<TARGET_OBJECTS:stage2Bootloader>
+        COMMAND ${CMAKE_LINKER} -m elf_i386 -T ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld -o ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj $<TARGET_OBJECTS:stage2Bootloader>
         COMMAND objdump -D ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
         COMMAND objdump -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
         COMMAND objdump -x ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.objdump
+        COMMAND_EXPAND_LISTS
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
-        DEPENDS $<TARGET_OBJECTS:stage2Bootloader> stage2Bootloader ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld)
+        DEPENDS $<TARGET_OBJECTS:stage2Bootloader> stage2Bootloader ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld
+)
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/stage2.bin

@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.0)
+
+set(CMAKE_SYSTEM_NAME Generic)
+
 project(guide_os C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -Wall -ggdb -Werror -fno-omit-frame-pointer -fno-stack-protector")
+set(CMAKE_C_FLAGS "-fno-strict-aliasing -Wall -ggdb -Werror -fno-omit-frame-pointer -fno-stack-protector -m64")
 
 set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3")

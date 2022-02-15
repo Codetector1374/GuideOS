@@ -7,17 +7,18 @@ MEMORY {
 ENTRY(stage2)
 SECTIONS {
     text : {
+        *(.text.start)
         *(.text .text*)
     } >stage2
     .rodata : {
-        *(.rodata)
+        *(.rodata .rodata.*)
     } >stage2
 
     .bss : {
-        *(.bss)
+        *(.bss .bss.*)
     } >stage2
     .data : {
-        *(.data)
+        *(.data .data.*)
     } >stage2
     /DISCARD/ : {
         *(.debug*)
