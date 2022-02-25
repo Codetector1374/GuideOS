@@ -23,7 +23,6 @@ start:
 
 true_start:
     cli     # disable interrupts
-    cld
 
     # We zero the segment registers
     xor     ax, ax
@@ -32,6 +31,22 @@ true_start:
     mov     ss, ax
 
     mov     sp, 0x7C00   # SP is loaded with 0x7C00, we can use all that memory below code as stack.
+
+seta20.1:
+  in        al, 0x64               # Wait for not busy
+  test      al, 0x2
+  jnz       seta20.1
+
+  mov       al, 0xd1               # 0xd1 -> port 0x64
+  out       0x64, al
+
+seta20.2:
+  in      al, 0x64               # Wait for not busy
+  test    al, 0x2
+  jnz     seta20.2
+
+  mov    al, 0xdf              # 0xdf -> port 0x60
+  out    0x60, al
 
 # We need to store our drive number onto the stack (DL)
     push   dx   # Let's just push the entire DX register
@@ -69,7 +84,6 @@ true_start:
     call    print_string
 
 # goto stage 2
-    pop     dx
     jmp     0:0x7E00
 end:
     hlt

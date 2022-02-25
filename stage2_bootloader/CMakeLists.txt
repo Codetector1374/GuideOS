@@ -1,11 +1,13 @@
 project(stage2_bootloader ASM C)
 
 add_library(stage2Bootloader OBJECT
-        src/test.c
         src/asm/stage2.s
+        src/asm/protected_mode.s
+
+        src/stage2_loader.c
 )
 
-set(CMAKE_C_FLAGS "-static -fno-builtin -fno-pic -nostdinc -m16")
+set(CMAKE_C_FLAGS "-static -fno-builtin -fno-pic -nostdinc -m32")
 set(CMAKE_ASM_FLAGS "-m32")
 
 set(CMAKE_C_FLAGS_RELEASE "-Os")
