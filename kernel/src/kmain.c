@@ -1,9 +1,9 @@
-#include "vm.h"
-#include "console.h"
+#include "defs.h"
+
 
 __attribute__((noreturn))
 void kmain(void) {
-    console_init();
-    putchar('A');
+    kprintf("..kern..\n");
+
     for(;;) {}
 }
