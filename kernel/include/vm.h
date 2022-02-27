@@ -9,9 +9,22 @@
 
 #include "types.h"
 
-#define KBASE       (0xFFFF800000000000)
+#define KERNBASE       (0xFFFF800000000000)
 
-#define KV2P(VA)    (((size_t)VA) - KBASE)
-#define P2KV(PA)    ((void*)(((size_t)PA) + KBASE))
+#define KV2P(VA)    (((size_t)VA) - KERNBASE)
+#define P2KV(PA)    ((void*)(((size_t)PA) + KERNBASE))
+
+// Paging related defines
+
+#define PG_SIZE     (4096)
+
+#define NPTENTRIES  (512)
+
+#define PGROUNDUP(sz)  (((sz)+PGSIZE-1) & ~(PGSIZE-1))
+#define PGROUNDDOWN(a) (((a)) & ~(PGSIZE-1))
+
+
+
+extern  size_t kern_end[];
 
 #endif //GUIDE_OS_VM_H
