@@ -23,6 +23,7 @@ start32:
     mov     ds, ax
     mov     es, ax
     mov     ss, ax
+
     xor     ax, ax
     mov     fs, ax
     mov     gs, ax

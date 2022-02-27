@@ -14,7 +14,6 @@ set(CMAKE_C_FLAGS_DEBUG "-Os -ggdb3")
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/stage1.obj
         COMMAND ${CMAKE_LINKER} -m elf_i386 -N -T ${CMAKE_CURRENT_SOURCE_DIR}/stage1.ld -o ${CMAKE_CURRENT_BINARY_DIR}/stage1.obj $<TARGET_OBJECTS:stage1Bootloader>
-        COMMAND objdump -D ${CMAKE_CURRENT_BINARY_DIR}/stage1.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage1.asm
         COMMAND objdump -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/stage1.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage1.asm
         COMMAND objdump -x ${CMAKE_CURRENT_BINARY_DIR}/stage1.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage1.objdump
         COMMAND_EXPAND_LISTS
