@@ -1,20 +1,21 @@
 .intel_syntax noprefix
 
 .extern kmain
+.globl kentry
+.globl raw_entry
 
 
 .code32
-.section .text.raw_init
+.section .raw_init, "ax"
 raw_entry:
     mov     eax, 0xb0bacafe
     mov     ebx, 0
-    jmp     _start
+    jmp     kentry
 
-.code32
-.section .text.bootstrap
-
-.globl _start
-_start:
+.section .bootstrap, "ax"
+.align 8
+kentry:
+    cli
     mov esp, 0x10000
     push ebx
     push eax
@@ -88,6 +89,7 @@ gdtdesc:
     .short   (gdtdesc - gdt64 - 1)
     .quad   gdt64
 
+.section .bootstrap.data, "wa"
 .align 4096
 pml4:
 .fill 512, 8, 0

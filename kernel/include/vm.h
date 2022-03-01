@@ -20,8 +20,8 @@
 
 #define NPTENTRIES  (512)
 
-#define PGROUNDUP(sz)  (((sz)+PGSIZE-1) & ~(PGSIZE-1))
-#define PGROUNDDOWN(a) (((a)) & ~(PGSIZE-1))
+#define PGROUNDUP(sz)  (((sz)+PG_SIZE-1) & ~(PG_SIZE-1))
+#define PGROUNDDOWN(a) (((a)) & ~(PG_SIZE-1))
 
 
 

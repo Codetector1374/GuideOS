@@ -3,6 +3,7 @@
 #include "vm.h"
 #include "x86.h"
 #include "string.h"
+#include "defs.h"
 
 #define NUM_COL     80
 #define NUM_ROW     25
@@ -48,4 +49,22 @@ void putchar(int c) {
     outb(CRTPORT, 15);
     outb(CRTPORT+1, pos);
     crt[pos] = ' ' | 0x0700;
+}
+
+__attribute__((noreturn))
+void
+panic(char *s)
+{
+    int i;
+//    uint pcs[10];
+
+    cli();
+//    cons.locking = 0;
+//    kprintf("cpu with apicid %d: panic: ", lapicid());
+    kprintf("=====PANIC====\n");
+    kprintf(s);
+    kprintf("\n");
+    for(;;) {
+        hlt();
+    }
 }

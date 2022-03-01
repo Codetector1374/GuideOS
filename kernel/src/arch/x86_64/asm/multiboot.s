@@ -1,6 +1,7 @@
 .intel_syntax noprefix
 
-.section .multiboot
+.section .multiboot, "a"
+.align 8
 multiboot_start:
 .long 0xE85250D6
 .long 0

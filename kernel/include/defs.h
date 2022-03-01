@@ -12,4 +12,9 @@
 #include "vm.h"
 #include "string.h"
 
+#define ROUNDUP_PWR2(x, sz)      (((x) + ((sz) - 1)) & ((sz) - 1))
+#define ROUNDDOWN_PWR2(x, sz)    ((x) & ((sz) - 1))
+
+void panic(char *s);
+
 #endif //GUIDE_OS_DEFS_H

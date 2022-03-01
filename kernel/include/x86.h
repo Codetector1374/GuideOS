@@ -9,6 +9,24 @@
 
 #include "types.h"
 
+static inline void
+cli(void)
+{
+    __asm__ volatile("cli");
+}
+
+static inline void
+hlt(void)
+{
+    __asm__ volatile("hlt");
+}
+
+static inline void
+sti(void)
+{
+    __asm__ volatile("sti");
+}
+
 static inline u8
 inb(u16 port)
 {
