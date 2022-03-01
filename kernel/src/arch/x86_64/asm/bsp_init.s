@@ -71,19 +71,9 @@ gdt64:
     .short   0, 0
     .byte    0,0,0,0
 
-    # Code Segment
-    .short 0xFFFF, 0
-    .byte 0
-    .byte 0b10011010
-    .byte 0b11101111
-    .byte 0
+    .quad (1<<43) | (1<<44) | (1<<47) | (1<<53)
 
-    # Data Segment
-    .short 0xFFFF, 0
-    .byte 0
-    .byte 0b10010010
-    .byte 0b11101111
-    .byte 0
+    .quad (1<<44) | (1<<47) | (1<<53)
 
 gdtdesc:
     .short   (gdtdesc - gdt64 - 1)
