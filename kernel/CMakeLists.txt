@@ -3,7 +3,13 @@ project(kernel ASM C)
 add_library(kernel OBJECT
         src/arch/x86_64/asm/bsp_init.s
         src/arch/x86_64/asm/multiboot.s
-        src/kmain.c src/arch/x86_64/console.c src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c)
+        src/arch/x86_64/console.c
+        src/arch/x86_64/interrupt.c
+        src/arch/x86_64/gdt.c
+
+        src/kmain.c
+        src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
+  )
 
 set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -mcmodel=large -m64")
 set(CMAKE_ASM_FLAGS "-m64")

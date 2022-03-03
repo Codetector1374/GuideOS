@@ -5,7 +5,7 @@
 //
 
 #include "string.h"
-#include "x86.h"
+#include "arch/x86.h"
 
 void*
 memset(void *dst, int c, size_t n)

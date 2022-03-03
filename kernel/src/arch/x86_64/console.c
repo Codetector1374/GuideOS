@@ -1,7 +1,7 @@
 #include "console.h"
 #include "types.h"
 #include "vm.h"
-#include "x86.h"
+#include "arch/x86.h"
 #include "string.h"
 #include "defs.h"
 

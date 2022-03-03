@@ -84,4 +84,25 @@ stosl(void *addr, int data, int cnt)
     "memory", "cc");
 }
 
+static inline u64
+rdmsr(u32 msr_addr) {
+    u32 msrh, msrl;
+    __asm__ volatile("rdmsr"
+        : "=d"(msrh), "=a"(msrl)
+        : "c"(msr_addr)
+    );
+    return (((u64)msrh) << 32) | msrl;
+}
+
+static inline void
+wrmsr(u32 msr_addr, u64 msr_data) {
+    u32 msrh, msrl;
+    msrh = msr_data >> 32;
+    msrl = (u32) msr_data;
+    __asm__ volatile("wrmsr"
+        :
+        : "c"(msr_addr), "a"(msrl), "d"(msrh)
+    );
+}
+
 #endif //GUIDE_OS_X86_H
