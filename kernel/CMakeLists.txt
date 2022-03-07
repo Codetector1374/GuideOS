@@ -11,7 +11,7 @@ add_library(kernel OBJECT
         src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
   )
 
-set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -mcmodel=large -mgeneral-regs-only -m64")
+set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64")
 set(CMAKE_ASM_FLAGS "-m64")
 
 set(CMAKE_C_FLAGS_RELEASE "-O2")

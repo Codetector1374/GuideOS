@@ -9,12 +9,13 @@
 #include "arch/x86/interrupt.h"
 #include "arch/x86/system.h"
 
-#pragma pack(push, 0)
+#pragma pack(push, 1)
 typedef struct {
   uint16_t size;
   void* idt;
 } idtr_t;
 #pragma pack(pop)
+_Static_assert(sizeof(idtr_t) == 10, "lol");
 
 __attribute__((aligned(8)))
 static idt64_t idt;
@@ -37,5 +38,6 @@ void load_idt(idt64_t *idt) {
             255,
             idt
     };
-    asm volatile("lidt (%0)" : : "r"(&idtr));
+    volatile idtr_t *pIDTR = &idtr;
+    asm volatile("lidt (%0)" : : "r"(pIDTR));
 }
