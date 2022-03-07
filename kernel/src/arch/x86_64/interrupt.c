@@ -5,7 +5,8 @@
 //
 
 #include "defs.h"
-#include "x86.h"
+#include "arch/x86.h"
+#include "arch/x86/interrupt.h"
 
 void interrupt_init(void) {
 

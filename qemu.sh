@@ -1,0 +1,1 @@
+qemu-system-x86_64 -m 512M -drive file=cmake-build-debug/guideos.img,index=0,media=disk,format=raw

@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 
 project(guide_os C)
 
-if (NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP objdump)
-endif()
-
 message("USING objdump ${CMAKE_OBJDUMP}")
 
 set(CMAKE_C_STANDARD 11)
