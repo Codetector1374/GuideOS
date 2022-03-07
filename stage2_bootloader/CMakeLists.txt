@@ -17,8 +17,8 @@ set(CMAKE_C_FLAGS_DEBUG "-Os -ggdb3")
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj
         COMMAND ${CMAKE_LINKER} -m elf_i386 -T ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld -o ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj $<TARGET_OBJECTS:stage2Bootloader>
-        COMMAND objdump -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
-        COMMAND objdump -x ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.objdump
+        COMMAND ${CMAKE_OBJDUMP} -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
+        COMMAND ${CMAKE_OBJDUMP} -x ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj > ${CMAKE_CURRENT_BINARY_DIR}/stage2.objdump
         COMMAND_EXPAND_LISTS
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/stage2.asm
         DEPENDS $<TARGET_OBJECTS:stage2Bootloader> stage2Bootloader ${CMAKE_CURRENT_SOURCE_DIR}/stage2.ld
@@ -26,7 +26,7 @@ add_custom_command(
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/stage2.bin
-        COMMAND objcopy -O binary ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj ${CMAKE_CURRENT_BINARY_DIR}/stage2.bin
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj ${CMAKE_CURRENT_BINARY_DIR}/stage2.bin
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/stage2.obj
 )
 

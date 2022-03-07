@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.0)
 
-set(CMAKE_SYSTEM_NAME Generic)
-
 project(guide_os C)
+
+if (NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP objdump)
+endif()
+
+message("USING objdump ${CMAKE_OBJDUMP}")
 
 set(CMAKE_C_STANDARD 11)
 
@@ -18,7 +22,7 @@ add_subdirectory(stage2_bootloader)
 add_subdirectory(kernel)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/guideos.img
-        COMMAND dd if=/dev/zero of=${CMAKE_CURRENT_BINARY_DIR}/guideos.img bs=1M count=10 status=none
+        COMMAND dd if=/dev/zero of=${CMAKE_CURRENT_BINARY_DIR}/guideos.img bs=1048576 count=10
         COMMAND dd if=${CMAKE_CURRENT_BINARY_DIR}/stage1_bootloader/stage1.bin of=${CMAKE_CURRENT_BINARY_DIR}/guideos.img bs=512 count=1 conv=notrunc
         COMMAND dd if=${CMAKE_CURRENT_BINARY_DIR}/stage2_bootloader/stage2.bin of=${CMAKE_CURRENT_BINARY_DIR}/guideos.img bs=512 seek=1 count=64 conv=notrunc
         COMMAND dd if=${CMAKE_CURRENT_BINARY_DIR}/kernel/kernel.bin of=${CMAKE_CURRENT_BINARY_DIR}/guideos.img bs=512 seek=65 conv=notrunc

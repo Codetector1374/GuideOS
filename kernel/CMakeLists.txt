@@ -22,8 +22,8 @@ include_directories(include)
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj
         COMMAND ${CMAKE_LINKER} -m elf_x86_64 -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj $<TARGET_OBJECTS:kernel>
-        COMMAND objdump -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
-        COMMAND objdump -x ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.objdump
+        COMMAND ${CMAKE_OBJDUMP} -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
+        COMMAND ${CMAKE_OBJDUMP} -x ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.objdump
         COMMAND_EXPAND_LISTS
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
         DEPENDS $<TARGET_OBJECTS:kernel> kernel ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld
@@ -31,7 +31,7 @@ add_custom_command(
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
-        COMMAND objcopy -O binary ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj ${CMAKE_CURRENT_BINARY_DIR}/kernel.bin
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj
 )
 
