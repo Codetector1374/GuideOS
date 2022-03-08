@@ -1,23 +1,24 @@
 project(kernel ASM C)
 
 add_library(kernel OBJECT
-        src/arch/x86_64/asm/bsp_init.s
-        src/arch/x86_64/asm/multiboot.s
-        src/arch/x86_64/console.c
-        src/arch/x86_64/interrupt.c
-        src/arch/x86_64/system.c
+        src/arch/x86/asm/bsp_init.s
+        src/arch/x86/asm/multiboot.s
+        src/arch/x86/asm/vectors.s
+        src/arch/x86/console.c
+        src/arch/x86/interrupt.c
+        src/arch/x86/system.c
 
         src/kmain.c
         src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
-  )
-
-set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64")
-set(CMAKE_ASM_FLAGS "-m64")
-
-set(CMAKE_C_FLAGS_RELEASE "-O2")
-set(CMAKE_C_FLAGS_DEBUG "-O2 -ggdb3")
+        src/util/helpers.c)
 
 include_directories(include)
+
+set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64")
+set(CMAKE_ASM_FLAGS "-m64 -x assembler-with-cpp")
+
+set(CMAKE_C_FLAGS_RELEASE "-O2")
+set(CMAKE_C_FLAGS_DEBUG "-O2 -ggdb")
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj

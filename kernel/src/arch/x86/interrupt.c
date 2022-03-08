@@ -20,15 +20,24 @@ _Static_assert(sizeof(idtr_t) == 10, "lol");
 __attribute__((aligned(8)))
 static idt64_t idt;
 
+void handle_interrupt(trapframe_t *tf)
+{
+    if (tf->int_num == IDT_ENTRY_BP) {
+        kprintf("breakpoint at pc: %p\n", tf->rip);
+        return;
+    }
+    panic("interrupt_handler");
+}
+
 __attribute__((interrupt))
-void the_handler(void* _unused_) {
-    panic("breakpoint\n");
+void double_fault(void *_unused_) {
+    panic("A double fault has occurred");
 }
 
 void interrupt_init(void) {
     memset(&idt, 0, sizeof(idt));
-    idt.entries[IDT_ENTRY_BP] = mk_idt_entry(the_handler, 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
-    idt.entries[IDT_ENTRY_DOUBLE_FAULT] = mk_idt_entry(the_handler, 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
+    idt.entries[IDT_ENTRY_BP] = mk_idt_entry(vector_bp, 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
+    idt.entries[IDT_ENTRY_DOUBLE_FAULT] = mk_idt_entry(double_fault, 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
     load_idt(&idt);
     kprintf("idt loaded\n");
 }

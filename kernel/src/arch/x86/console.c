@@ -50,21 +50,3 @@ void putchar(int c) {
     outb(CRTPORT+1, pos);
     crt[pos] = ' ' | 0x0700;
 }
-
-__attribute__((noreturn))
-void
-panic(char *s)
-{
-    int i;
-//    uint pcs[10];
-
-    cli();
-//    cons.locking = 0;
-//    kprintf("cpu with apicid %d: panic: ", lapicid());
-    kprintf("=====PANIC====\n");
-    kprintf(s);
-    kprintf("\n");
-    for(;;) {
-        hlt();
-    }
-}

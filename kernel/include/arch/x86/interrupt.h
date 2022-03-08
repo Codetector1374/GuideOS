@@ -8,6 +8,7 @@
 #define GUIDE_OS_INTERRUPT_H
 
 #include "types.h"
+#include "interrupt_vectors.h"
 
 #define IDT_OFFSET_1(ptr)   ((size_t)(ptr) & 0xFFFF)
 #define IDT_OFFSET_2(ptr)   (((size_t)(ptr) >> 16) & 0xFFFF)
@@ -29,17 +30,35 @@ typedef struct IDT64 {
 
 typedef void (*int_handler_t)(void*);
 
+typedef struct {
+  uint64_t rax;
+  uint64_t rcx;
+  uint64_t rdx;
+  uint64_t rbx;
+  uint64_t rsi;
+  uint64_t rdi;
+  uint64_t rbp;
+  uint64_t r8;
+  uint64_t r9;
+  uint64_t r10;
+  uint64_t r11;
+  uint64_t r12;
+  uint64_t r13;
+  uint64_t r14;
+  uint64_t r15;
+  uint64_t int_num;
+  uint64_t error_code;
+  uint64_t rip;
+  uint64_t cs;
+  uint64_t flags;
+  uint64_t rsp;
+  uint64_t ss;
+} trapframe_t;
+
 #define IDT_GATE_TYPE_INTERRUPT_GATE    0x8E
 #define IDT_GATE_TYPE_INTERRUPT_TRAP    0x8F
 
-#define IDT_ENTRY_DIV_BY_ZERO           0x0
-#define IDT_ENTRY_DEBUG                 0x1
-#define IDT_ENTRY_NMI                   0x2
-#define IDT_ENTRY_BP                    0x3
-#define IDT_ENTRY_OF                    0x4
-
-#define IDT_ENTRY_INV_OPCODE            0x6
-#define IDT_ENTRY_DOUBLE_FAULT          0x8
+void handle_interrupt(trapframe_t *tf);
 
 static inline
 interrupt_gate_64_t

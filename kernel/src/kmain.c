@@ -15,6 +15,9 @@ void kmain(void) {
 
 
     asm volatile("int3");
+    kprintf("past breakpoint\n");
 
-    for(;;) {}
+    for(;;) {
+        wait_for_interrupt();
+    }
 }
