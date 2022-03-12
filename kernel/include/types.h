@@ -17,6 +17,8 @@ typedef uint8_t     u8;
 
 typedef u8          bool;
 
+typedef size_t      uptr;
+
 #define FALSE   0
 #define TRUE    1
 

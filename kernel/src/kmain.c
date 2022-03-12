@@ -6,6 +6,7 @@
 
 __attribute__((noreturn))
 void kmain(void) {
+    console_init();
     kprintf("..kern..\n");
     interrupt_init();
     boot_alloc_init(kern_end, 16*1024*1024); // Feed 16M into the boot_alloc

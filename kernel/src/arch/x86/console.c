@@ -4,6 +4,7 @@
 #include "arch/x86.h"
 #include "string.h"
 #include "defs.h"
+#include "spinlock.h"
 
 #define NUM_COL     80
 #define NUM_ROW     25
@@ -13,11 +14,14 @@
 
 static u16* crt = (u16*) P2KV(0xb8000);
 
+static spinlock_t console_lock;
 
 void console_init() {
+    init_lock(&console_lock, "console");
 }
 
-void putchar(int c) {
+void cga_putchar(int c)
+{
     int pos;
 
     // Cursor position: col + 80*row.
@@ -49,4 +53,10 @@ void putchar(int c) {
     outb(CRTPORT, 15);
     outb(CRTPORT+1, pos);
     crt[pos] = ' ' | 0x0700;
+}
+
+void putchar(int c) {
+    acquire(&console_lock);
+    cga_putchar(c);
+    release(&console_lock);
 }

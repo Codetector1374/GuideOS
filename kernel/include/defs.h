@@ -16,7 +16,8 @@
 #define ROUNDDOWN_PWR2(x, sz)    ((x) & ((sz) - 1))
 
 void panic(char *s);
-void disable_interrupt(void);
+bool disable_interrupt(void);
+void enable_interrupt();
 void wait_for_interrupt(void);
 
 #endif //GUIDE_OS_DEFS_H

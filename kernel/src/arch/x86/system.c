@@ -7,9 +7,15 @@
 #include "arch/x86.h"
 #include "defs.h"
 
-void disable_interrupt()
+bool disable_interrupt()
 {
+    size_t flags = read_flags();
     cli();
+    return (flags & FL_IF) > 0;
+}
+
+void enable_interrupt() {
+    sti();
 }
 
 void wait_for_interrupt() {

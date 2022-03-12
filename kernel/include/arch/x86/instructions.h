@@ -9,6 +9,8 @@
 
 #include "types.h"
 
+#define FL_IF           0x00000200
+
 static inline void
 cli(void)
 {
@@ -82,6 +84,14 @@ stosl(void *addr, int data, int cnt)
     "=D" (addr), "=c" (cnt) :
     "0" (addr), "1" (cnt), "a" (data) :
     "memory", "cc");
+}
+
+static inline size_t
+read_flags()
+{
+    size_t flags;
+    __asm__ volatile("pushf; pop %0" : "=r" (flags));
+    return flags;
 }
 
 static inline u64
