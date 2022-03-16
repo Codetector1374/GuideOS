@@ -46,7 +46,7 @@ typedef struct {
   uint64_t r13;
   uint64_t r14;
   uint64_t r15;
-  uint64_t int_num;
+  uint64_t trap_no;
   uint64_t error_code;
   uint64_t rip;
   uint64_t cs;
@@ -78,5 +78,8 @@ mk_idt_entry(int_handler_t handler_fn, uint8_t ist, uint8_t type_attr, uint8_t c
 void interrupt_init(void);
 
 void load_idt(idt64_t *idt);
+
+// lapic.c
+void lapic_init(void);
 
 #endif //GUIDE_OS_INTERRUPT_H

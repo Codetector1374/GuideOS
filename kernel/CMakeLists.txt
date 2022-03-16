@@ -3,14 +3,16 @@ project(kernel ASM C)
 add_library(kernel OBJECT
         src/arch/x86/asm/bsp_init.s
         src/arch/x86/asm/multiboot.s
-        src/arch/x86/asm/vectors.s
+        src/arch/x86/asm/trap.s
+        src/arch/x86/asm/vector.s
+
         src/arch/x86/console.c
         src/arch/x86/interrupt.c
         src/arch/x86/system.c
 
         src/kmain.c
         src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
-        src/util/helpers.c src/spinlock.c src/device/uart/uart.c)
+        src/util/helpers.c src/spinlock.c src/device/uart/uart.c src/arch/x86/lapic.c)
 
 include_directories(include)
 

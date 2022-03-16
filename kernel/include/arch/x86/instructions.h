@@ -94,6 +94,14 @@ read_flags()
     return flags;
 }
 
+static inline size_t
+rcr2(void)
+{
+  size_t val;
+  __asm__ volatile("mov %%cr2,%0" : "=r" (val));
+  return val;
+}
+
 static inline u64
 rdmsr(u32 msr_addr) {
     u32 msrh, msrl;

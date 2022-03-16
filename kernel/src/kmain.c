@@ -6,19 +6,17 @@
 
 __attribute__((noreturn))
 void kmain(void) {
-    console_init();
-    kprintf("..kern..\n");
-    interrupt_init();
-    boot_alloc_init(kern_end, 16*1024*1024); // Feed 16M into the boot_alloc
-
-//    u64 apic_msr = rdmsr(IA32_APIC_BASE_MSR);
-//    kprintf("APIC BASE = %x\n", apic_msr);
+  console_init();
+  kprintf("..kern..\n");
+  interrupt_init();
+  lapic_init();
+  boot_alloc_init(kern_end, 16 * 1024 * 1024); // Feed 16M into the boot_alloc
 
 
-    asm volatile("int3");
-    kprintf("past breakpoint\n");
+  asm volatile("int3");
+  kprintf("past breakpoint\n");
 
-    for(;;) {
-        wait_for_interrupt();
-    }
+  for (;;) {
+    wait_for_interrupt();
+  }
 }
