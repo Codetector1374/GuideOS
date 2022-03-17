@@ -57,8 +57,11 @@ typedef struct {
   uint64_t ss;
 } trapframe_t;
 
-#define IDT_GATE_TYPE_INTERRUPT_GATE    0x8E
-#define IDT_GATE_TYPE_INTERRUPT_TRAP    0x8F
+#define IDT_GATE_FLAGS_INT      0xE
+#define IDT_GATE_FLAGS_TRAP     0xF
+#define IDT_GATE_FLAGS_DPL_USER (0x3U << 5U)
+#define IDT_GATE_FLAGS_DPL_KRNL (0x0U << 5U)
+#define IDT_GATE_FLAGS_P        0x80
 
 void handle_interrupt(trapframe_t *tf);
 

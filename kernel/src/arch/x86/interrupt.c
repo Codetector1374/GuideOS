@@ -8,6 +8,7 @@
 #include "arch/x86.h"
 #include "arch/x86/interrupt.h"
 #include "arch/x86/system.h"
+#include "systick.h"
 
 #pragma pack(push, 1)
 typedef struct {
@@ -27,32 +28,33 @@ void handle_interrupt(trapframe_t *tf) {
     kprintf("DF rip = %p\n", tf->rip);
     panic("A double fault has occurred");
   }
+
   switch (tf->trap_no) {
     case IDT_ENTRY_BP:
       kprintf("breakpoint at pc: %p\n", tf->rip);
       return;
-
+    case IDT_ENTRY_IRQ_0:
+      systick_increment();
+      lapic_eoi();
+      return;
+    case IDT_ENTRY_PAGE_FAULT:
+      size_t faulting_addr = rcr2();
+      kprintf("pg fault on %p at \nrip=%p\n", faulting_addr, tf->rip);
+      panic("pgfault");
     default:
+      kprintf("unhandled %d\n", tf->trap_no);
+      panic("interrupt_handler");
       return;
   }
-
-  if (tf->trap_no == IDT_ENTRY_PAGE_FAULT) {
-    size_t faulting_addr = rcr2();
-    kprintf("pg fault on %p at \nrip=%p\n", faulting_addr, tf->rip);
-  }
-  if (tf->trap_no == IDT_ENTRY_IRQ_0) {
-    lapic_eoi();
-    return;
-  }
-
-  kprintf("unhandled %d\n", tf->trap_no);
-  panic("interrupt_handler");
 }
 
 void interrupt_init(void) {
   memset(&idt, 0, sizeof(idt));
   for (int i = 0; i < 256; ++i) {
-    idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i], 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
+    idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i], 
+      0, 
+      IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_KRNL | IDT_GATE_FLAGS_INT, 
+      GDT_KERNEL_CODE);
   }
 
   load_idt(&idt);

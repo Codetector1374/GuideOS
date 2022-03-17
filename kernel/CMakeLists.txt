@@ -14,6 +14,7 @@ add_library(kernel OBJECT
         src/arch/x86/x86_pic.c
 
         src/kmain.c
+        src/time/systick.c
         src/util/kprintf.c 
         src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
         src/util/helpers.c src/spinlock.c src/device/uart/uart.c 
