@@ -83,5 +83,9 @@ void load_idt(idt64_t *idt);
 
 // lapic.c
 void lapic_init(void);
+void lapic_eoi(void);
+
+// x86_pic.c
+void pic_init(void);
 
 #endif //GUIDE_OS_INTERRUPT_H

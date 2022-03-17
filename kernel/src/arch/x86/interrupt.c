@@ -27,14 +27,24 @@ void handle_interrupt(trapframe_t *tf) {
     kprintf("DF rip = %p\n", tf->rip);
     panic("A double fault has occurred");
   }
-  if (tf->trap_no == IDT_ENTRY_BP) {
-    kprintf("breakpoint at pc: %p\n", tf->rip);
-    return;
+  switch (tf->trap_no) {
+    case IDT_ENTRY_BP:
+      kprintf("breakpoint at pc: %p\n", tf->rip);
+      return;
+
+    default:
+      return;
   }
+
   if (tf->trap_no == IDT_ENTRY_PAGE_FAULT) {
     size_t faulting_addr = rcr2();
     kprintf("pg fault on %p at \nrip=%p\n", faulting_addr, tf->rip);
   }
+  if (tf->trap_no == IDT_ENTRY_IRQ_0) {
+    lapic_eoi();
+    return;
+  }
+
   kprintf("unhandled %d\n", tf->trap_no);
   panic("interrupt_handler");
 }

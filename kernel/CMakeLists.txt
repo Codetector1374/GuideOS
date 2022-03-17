@@ -9,10 +9,16 @@ add_library(kernel OBJECT
         src/arch/x86/console.c
         src/arch/x86/interrupt.c
         src/arch/x86/system.c
+        src/arch/x86/mem/vm.c
+        src/arch/x86/lapic.c
+        src/arch/x86/x86_pic.c
 
         src/kmain.c
-        src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
-        src/util/helpers.c src/spinlock.c src/device/uart/uart.c src/arch/x86/lapic.c src/mem/memlayout.c include/mem/vm.h src/arch/x86/mem/vm.c)
+        src/util/kprintf.c 
+        src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
+        src/util/helpers.c src/spinlock.c src/device/uart/uart.c 
+        src/mem/memlayout.c 
+        )
 
 include_directories(include)
 

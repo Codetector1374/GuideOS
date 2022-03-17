@@ -52,11 +52,16 @@ lapicw(int index, int value)
   lapic[ID];  // wait for write to finish, by reading
 }
 
+void lapic_eoi(void)
+{
+  if(lapic)
+    lapicw(EOI, 0);
+}
 
 void lapic_init(void) {
   uint64_t apic_base_pa = rdmsr(IA32_APIC_BASE_MSR);
-  lapic = (volatile u32 *) P2KV(apic_base_pa);
-
+  if (!(apic_base_pa & IA32_APIC_BASE_MSR_ENABLED)) panic("apic disabled");
+  lapic = (volatile u32 *) P2KV(apic_base_pa & IA32_APIC_BASE_MSR_BASE_ADDR_MSK);
 
   // Enable local APIC; set spurious interrupt vector.
   lapicw(SVR, ENABLE | IDT_ENTRY_IRQ_SPURIOUS);

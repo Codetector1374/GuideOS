@@ -23,8 +23,4 @@
 #define IDT_ENTRY_IRQ_ERROR             (IDT_ENTRY_IRQ_0 + 19)
 #define IDT_ENTRY_IRQ_SPURIOUS          (IDT_ENTRY_IRQ_0 + 31)
 
-#ifndef __ASSEMBLER__
-void vector_bp();
-#endif
-
 #endif //GUIDE_OS_INTERRUPT_VECTORS_H
