@@ -56,6 +56,13 @@ long_start:
     mov     ss, ax
     mov     fs, ax
     mov     gs, ax
+    mov     rax, 0xFFFF800000000000
+    add     rax, OFFSET gdt64
+    mov     [gdtdesc_addr], rax
+    movabs  rax, OFFSET gdtdesc
+    mov     rcx, 0xFFFF800000000000
+    add     rax, rcx
+    lgdt    [rax]
 
     mov     rdi, DWORD [rsp]
     mov     rsi, DWORD [rsp + 4]
@@ -79,6 +86,7 @@ gdt64:
 
 gdtdesc:
     .short   (gdtdesc - gdt64 - 1)
+gdtdesc_addr:
     .quad   gdt64
 
 .section .bootstrap.data, "wa"
