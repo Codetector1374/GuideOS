@@ -9,7 +9,7 @@
 
 #include "types.h"
 #include "kprintf.h"
-#include "vm.h"
+#include "mem/memlayout.h"
 #include "string.h"
 
 #define ROUNDUP_PWR2(x, sz)      (((x) + ((sz) - 1)) & ((sz) - 1))

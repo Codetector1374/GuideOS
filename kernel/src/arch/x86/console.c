@@ -1,6 +1,6 @@
 #include "console.h"
 #include "types.h"
-#include "vm.h"
+#include "mem/memlayout.h"
 #include "arch/x86.h"
 #include "string.h"
 #include "defs.h"

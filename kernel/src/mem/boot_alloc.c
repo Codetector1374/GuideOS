@@ -26,12 +26,12 @@ void boot_alloc_init(void *start_kva, size_t size) {
     boot_alloc_initialized = TRUE;
 
     // Force native size alignment
-    default_zone.begin_kva = (void*)ROUNDUP_PWR2((size_t)start_kva, sizeof(size_t));
+    default_zone.begin_kva = (void*)ROUNDUP_PWR2((size_t)start_kva, PG_SIZE);
     default_zone.end_kva = (void*)((size_t)start_kva + size);
 }
 
 void *boot_alloc(size_t size) {
-    size = ROUNDUP_PWR2(size, sizeof(size_t));
+    size = ROUNDUP_PWR2(size, PG_SIZE);
 
     if (default_zone.begin_kva + size < default_zone.end_kva) {
         void* return_ptr = default_zone.begin_kva;

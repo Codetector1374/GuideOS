@@ -15,6 +15,11 @@ struct boot_alloc_zone {
 };
 
 void boot_alloc_init(void* start_kva, size_t size);
+/**
+ * Initial Allocation. Only support page sized allocations.
+ * @param size - n bytes, rounded up to nearest page size automatically
+ * @return null or ptr to the allocated region
+ */
 void* boot_alloc(size_t size);
 
 #endif //GUIDE_OS_BOOT_ALLOC_H

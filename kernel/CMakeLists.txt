@@ -12,7 +12,7 @@ add_library(kernel OBJECT
 
         src/kmain.c
         src/util/kprintf.c src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
-        src/util/helpers.c src/spinlock.c src/device/uart/uart.c src/arch/x86/lapic.c src/mem/vm.c include/mem/vm.h src/arch/x86/mem/vm.c)
+        src/util/helpers.c src/spinlock.c src/device/uart/uart.c src/arch/x86/lapic.c src/mem/memlayout.c include/mem/vm.h src/arch/x86/mem/vm.c)
 
 include_directories(include)
 

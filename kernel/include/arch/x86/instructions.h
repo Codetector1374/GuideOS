@@ -102,6 +102,12 @@ rcr2(void)
   return val;
 }
 
+static inline void
+lcr3(size_t cr3)
+{
+  __asm__ volatile("mov %0, %%cr3" : : "r"(cr3) : "memory");
+}
+
 static inline u64
 rdmsr(u32 msr_addr) {
     u32 msrh, msrl;
