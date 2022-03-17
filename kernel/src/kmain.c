@@ -6,11 +6,11 @@
 
 __attribute__((noreturn))
 void kmain(void) {
+  boot_alloc_init(kern_end, 16 * 1024 * 1024); // Feed 16M into the boot_alloc
   console_init();
   kprintf("..kern..\n");
   interrupt_init();
   lapic_init();
-  boot_alloc_init(kern_end, 16 * 1024 * 1024); // Feed 16M into the boot_alloc
 
 
   asm volatile("int3");
