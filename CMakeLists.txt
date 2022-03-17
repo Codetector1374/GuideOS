@@ -33,4 +33,5 @@ add_custom_target(
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/guideos.img
 )
 
-configure_file(qemu.sh qemu.sh COPYONLY)
+configure_file(kernel/script/qemu.sh qemu.sh COPYONLY)
+configure_file(kernel/script/.gdbinit .gdbinit COPYONLY)
