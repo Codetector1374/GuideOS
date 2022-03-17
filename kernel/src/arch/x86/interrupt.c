@@ -23,6 +23,10 @@ static idt64_t idt;
 extern const uint64_t vectors[];
 
 void handle_interrupt(trapframe_t *tf) {
+  if (tf->trap_no == IDT_ENTRY_DOUBLE_FAULT) {
+    kprintf("DF rip = %p\n", tf->rip);
+    panic("A double fault has occurred");
+  }
   if (tf->trap_no == IDT_ENTRY_BP) {
     kprintf("breakpoint at pc: %p\n", tf->rip);
     return;
@@ -35,19 +39,13 @@ void handle_interrupt(trapframe_t *tf) {
   panic("interrupt_handler");
 }
 
-__attribute__((interrupt))
-void double_fault(void *_unused_) {
-  panic("A double fault has occurred");
-}
-
 void interrupt_init(void) {
   memset(&idt, 0, sizeof(idt));
   for (int i = 0; i < 256; ++i) {
     idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i], 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
   }
-  idt.entries[IDT_ENTRY_DOUBLE_FAULT] = mk_idt_entry(double_fault, 0, IDT_GATE_TYPE_INTERRUPT_TRAP, GDT_KERNEL_CODE);
+
   load_idt(&idt);
-  kprintf("idt loaded\n");
 }
 
 void load_idt(idt64_t *idt) {

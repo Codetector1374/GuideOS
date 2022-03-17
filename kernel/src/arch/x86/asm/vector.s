@@ -1285,7 +1285,6 @@
 
 .globl vectors
 vectors:
-
     .quad vector_0
     .quad vector_1
     .quad vector_2

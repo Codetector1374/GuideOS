@@ -14,6 +14,7 @@
 #define IDT_OFFSET_2(ptr)   (((size_t)(ptr) >> 16) & 0xFFFF)
 #define IDT_OFFSET_3(ptr)   (((size_t)(ptr) >> 32) & 0xFFFFFFFF)
 
+#pragma pack(push, 1)
 typedef struct InterruptGate64 {
   uint16_t offset_1;        // offset bits 0..15
   uint16_t selector;        // a code segment selector in GDT or LDT
@@ -27,6 +28,7 @@ typedef struct InterruptGate64 {
 typedef struct IDT64 {
   interrupt_gate_64_t entries[256];
 } idt64_t;
+#pragma pack(pop)
 
 typedef void (*int_handler_t)(void*);
 

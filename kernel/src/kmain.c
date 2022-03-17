@@ -2,6 +2,7 @@
 #include "mem/boot_alloc.h"
 #include "mem/vm.h"
 #include "arch/x86/interrupt.h"
+#include "arch/x86/instructions.h"
 
 __attribute__((noreturn))
 void kmain(void) {
@@ -10,10 +11,12 @@ void kmain(void) {
   vmm_init();
   kprintf("..kern..\n");
   interrupt_init();
-//  lapic_init();
-
-
+  lapic_init();
   asm volatile("int3");
+  asm volatile("int $0x40");
+//  sti();
+
+
   kprintf("past breakpoint\n");
 
   for (;;) {
