@@ -12,8 +12,8 @@
 #include "mem/memlayout.h"
 #include "string.h"
 
-#define ROUNDUP_PWR2(x, sz)      (((x) + ((sz) - 1)) & ((sz) - 1))
-#define ROUNDDOWN_PWR2(x, sz)    ((x) & ((sz) - 1))
+#define ROUNDUP_PWR2(x, sz)      (((x) + ((sz) - 1UL)) & ~((sz) - 1UL))
+#define ROUNDDOWN_PWR2(x, sz)    ((x) & ~((sz) - 1))
 
 void panic(char *s);
 bool disable_interrupt(void);

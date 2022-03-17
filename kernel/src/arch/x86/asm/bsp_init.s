@@ -59,7 +59,8 @@ long_start:
 
     mov     rdi, DWORD [rsp]
     mov     rsi, DWORD [rsp + 4]
-    mov     rsp, 0xFFFF800000000000+ 0x10000
+    mov     rbp, 0xFFFF800000000000
+    mov     rsp, 0xFFFF800000000000 + 0x10000
     movabs  rax, OFFSET kmain
     call    rax
 

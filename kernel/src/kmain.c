@@ -10,7 +10,7 @@ void kmain(void) {
   vmm_init();
   kprintf("..kern..\n");
   interrupt_init();
-  lapic_init();
+//  lapic_init();
 
 
   asm volatile("int3");
