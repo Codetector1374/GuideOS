@@ -50,7 +50,7 @@ void interrupt_init(void) {
 
 void load_idt(idt64_t *idt) {
   volatile idtr_t idtr = {
-          255,
+          sizeof(idt64_t) - 1,
           idt
   };
   volatile idtr_t *pIDTR = &idtr;

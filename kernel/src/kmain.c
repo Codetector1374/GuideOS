@@ -13,8 +13,7 @@ void kmain(void) {
   interrupt_init();
   lapic_init();
   asm volatile("int3");
-  asm volatile("int $0x40");
-//  sti();
+  sti();
 
 
   kprintf("past breakpoint\n");
