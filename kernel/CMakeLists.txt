@@ -13,6 +13,8 @@ add_library(kernel OBJECT
         src/arch/x86/lapic.c
         src/arch/x86/x86_pic.c
 
+        src/cpu.c
+        src/proc/proc.c
         src/kmain.c
         src/time/systick.c
         src/util/kprintf.c 

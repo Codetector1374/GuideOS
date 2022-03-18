@@ -15,7 +15,8 @@ void init_lock(spinlock_t *lk, const char* name)
 }
 
 void acquire(spinlock_t *lk)
-{
+{   
+    push_int_disable();
     // Use c11 atomics to acquire the lock
     //  Here we atomically exchange locked with 1.  If locked was 0, then we've
     //    just acquired the lock!
@@ -33,5 +34,6 @@ void release(spinlock_t *lk)
         panic("release");
     }
     atomic_store_explicit(&lk->locked, 0, memory_order_release);
+    pop_int_disable();
 }
 

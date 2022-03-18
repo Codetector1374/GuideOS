@@ -85,6 +85,7 @@ void interrupt_init(void);
 void load_idt(idt64_t *idt);
 
 // lapic.c
+u8   lapic_id(void);
 void lapic_init(void);
 void lapic_eoi(void);
 

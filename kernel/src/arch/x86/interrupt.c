@@ -30,6 +30,9 @@ void handle_interrupt(trapframe_t *tf) {
   }
 
   switch (tf->trap_no) {
+    case IDT_ENTRY_IRQ_SPURIOUS:
+      lapic_eoi();
+      return;
     case IDT_ENTRY_BP:
       kprintf("breakpoint at pc: %p\n", tf->rip);
       return;

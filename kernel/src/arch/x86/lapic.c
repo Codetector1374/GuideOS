@@ -52,6 +52,10 @@ lapicw(int index, int value)
   lapic[ID];  // wait for write to finish, by reading
 }
 
+u8 lapic_id(void) {
+  return (lapic[ID] >> 24U);
+}
+
 void lapic_eoi(void)
 {
   if(lapic)
@@ -71,7 +75,7 @@ void lapic_init(void) {
   // TODO: calibrate TICR with external time
   lapicw(TDCR, X1);
   lapicw(TIMER, PERIODIC | IDT_ENTRY_IRQ_TIMER);
-  lapicw(TICR, 100000);
+  lapicw(TICR, 10000000);
 
   // Disable logical interrupt lines.
   lapicw(LINT0, MASKED);
