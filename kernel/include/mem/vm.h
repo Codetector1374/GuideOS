@@ -9,3 +9,4 @@
  * @brief setup initial page tables
  */
 void vmm_init(void);
+void vmm_load_ktable(void);

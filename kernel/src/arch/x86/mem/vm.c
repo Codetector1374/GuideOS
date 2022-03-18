@@ -33,5 +33,10 @@ void vmm_init(void) {
     if (!kern_phys_map_pdp) panic("vmm_init nullptr");
     kern_phys_map_pdp[PG_L3_IDX(va)] = PTE_FLAG_P | PTE_FLAG_WRITE | PTE_FLAG_SZ | PTE_ADDR(KV2P(va));
   }
+  vmm_load_ktable();
+}
+
+void vmm_load_ktable()
+{
   lcr3(KV2P(kern_pml4));
 }
