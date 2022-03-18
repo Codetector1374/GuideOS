@@ -14,23 +14,23 @@ void kmain(void)
   boot_alloc_init(kern_end, 4 * 1024 * 1024); // Feed 4M into the boot_alloc
   vmm_init();
   // Interrupt related
+  lapic_init();       // LAPIC
+  cpu_bsp_init();     // We need to do this early so we can have locks
   interrupt_init();   // IDT
-  lapic_init();   // LAPIC
-  pic_init();   // Disable PICs
+  pic_init();         // Disable PICs
+  ioapic_init();      // Setup 1 IOAPIC
   // System Devices
-  systick_init();
   console_init();
+  systick_init();
 
   mpmain();
 }
 
 void mpmain() 
 {
-  cpu_bsp_init();
   kprintf("cpu %u started...\n", cpu_id());
   sti();
   for (;;) {
-    kprintf("idle %lx\n", systick());
     wait_for_interrupt();
   }
 }

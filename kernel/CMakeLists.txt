@@ -12,6 +12,7 @@ add_library(kernel OBJECT
         src/arch/x86/mem/vm.c
         src/arch/x86/lapic.c
         src/arch/x86/x86_pic.c
+        src/arch/x86/ioapic.c
 
         src/cpu.c
         src/proc/proc.c

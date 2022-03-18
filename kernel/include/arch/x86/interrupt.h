@@ -92,4 +92,8 @@ void lapic_eoi(void);
 // x86_pic.c
 void pic_init(void);
 
+// ioapic.c
+void ioapic_init(void);
+void ioapic_enable(u8 irq, u8 apicid);
+
 #endif //GUIDE_OS_INTERRUPT_H
