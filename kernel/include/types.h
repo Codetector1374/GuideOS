@@ -3,9 +3,7 @@
 // Copyright (c) 2022 Codetector
 // MIT License
 //
-
-#ifndef GUIDE_OS_TYPES_H
-#define GUIDE_OS_TYPES_H
+#pragma once
 
 #include <stddef.h>
 #include <stdint-gcc.h>
@@ -21,5 +19,3 @@ typedef size_t      uptr;
 
 #define FALSE   0
 #define TRUE    1
-
-#endif //GUIDE_OS_TYPES_H

@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "arch/x86/instructions.h"
 #include "arch/x86/interrupt.h"
+#include "arch/x86/system.h"
 
 static struct cpu cpus[NCPU];
 static uint16_t ncpu = 0;
@@ -12,6 +13,7 @@ void cpu_bsp_init()
     bsp->apicid = lapic_id();
     bsp->started = 1;
     bsp->int_disable_layer = 0;
+    gdt_setup(bsp);
 }
 
 u16 cpu_id() {

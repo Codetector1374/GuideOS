@@ -57,7 +57,7 @@ void interrupt_init(void) {
     idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i], 
       0, 
       IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_KRNL | IDT_GATE_FLAGS_INT, 
-      GDT_KERNEL_CODE);
+      GDT_KERNEL_CODE * 8);
   }
 
   load_idt(&idt);

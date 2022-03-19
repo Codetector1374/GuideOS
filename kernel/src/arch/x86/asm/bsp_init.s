@@ -77,8 +77,7 @@ halt:
 
 gdt64:
     # Null Entry
-    .short   0, 0
-    .byte    0,0,0,0
+    .quad   0
 
     .quad (1<<43) | (1<<44) | (1<<47) | (1<<53)
 

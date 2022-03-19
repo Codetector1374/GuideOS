@@ -26,7 +26,19 @@ void wait_for_interrupt(void);
 // cpu.c
 void push_int_disable(void);
 void pop_int_disable(void);
+/**
+ * @brief get the current cpu id between 0 and NCPU
+ * @note must be called with interrupt disabled
+ * 
+ * @return u16 
+ */
 u16 cpu_id(void);
+/**
+ * @brief get a pointer to the current cpu strcture.
+ * @note must be called with interrupt disabled
+ * 
+ * @return struct cpu* 
+ */
 struct cpu* cur_cpu(void);
 
 #endif //GUIDE_OS_DEFS_H

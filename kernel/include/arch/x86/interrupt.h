@@ -32,7 +32,7 @@ typedef struct IDT64 {
 
 typedef void (*int_handler_t)(void*);
 
-typedef struct {
+typedef struct trapframe {
   uint64_t rax;
   uint64_t rcx;
   uint64_t rdx;
