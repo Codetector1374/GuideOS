@@ -12,8 +12,19 @@
 struct cpu;
 
 #pragma pack(push, 1)
+struct task_state_segment {
+  u32 _rsvd1;
+  u64 rsp[3];
+  u64 _rsvd2;
+  u64 ist[7];
+  u64 _rsvd3;
+  u16 _rsvd4;
+  u16 iopb;
+};
+_Static_assert(sizeof(struct task_state_segment) == 0x68, "task_state_segment size");
+
 struct tss_descriptor {
-  u16 limit;
+  u16 limit_15_0;
   u16 base_15_0;
   u8 base_23_16;
   u8 type:5;
@@ -28,7 +39,7 @@ struct tss_descriptor {
 _Static_assert(sizeof(struct tss_descriptor) == 16, "tss_descriptor packing wrong");
 
 struct segment_descriptor {
-  u16 limit;
+  u16 limit_15_0;
   u16 base_15_0;
   u8 base_23_16;
   u8 type:5;
@@ -55,4 +66,12 @@ struct gdt {
 };
 #pragma pack(pop)
 
-void gdt_setup(struct cpu*);
+void tss_setup(struct cpu* cpu);
+
+/**
+ * @brief Setup GDT for the provided CPU and switch to it.
+ * @note Must be called after tss_setup() for each cpu.
+ * 
+ * @param cpu the current running CPU
+ */
+void gdt_setup(struct cpu* cpu);

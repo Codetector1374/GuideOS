@@ -9,6 +9,7 @@ struct cpu {
     u32 int_disable_layer;
     u32 int_enabled;
     struct gdt gdt;
+    struct task_state_segment tss;
     struct proc* proc;
     u8 apicid;
 };
