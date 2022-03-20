@@ -34,6 +34,7 @@ struct cpu* cur_cpu(void) {
             return &cpus[i];
     }
     panic("unknown cpu");
+    return 0;
 }
 
 void push_int_disable(void)

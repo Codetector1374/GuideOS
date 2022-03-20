@@ -46,7 +46,7 @@ ioapicwrite(int reg, u32 data)
 void
 ioapic_init(void)
 {
-  int i, id, maxintr;
+  int i, maxintr;
 
   ioapic = (volatile struct ioapic*)P2KV(IOAPIC);
   maxintr = (ioapicread(IOAPIC_REG_VER) >> 16) & 0xFF;

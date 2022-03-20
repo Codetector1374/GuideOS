@@ -14,19 +14,29 @@ add_library(kernel OBJECT
         src/arch/x86/x86_pic.c
         src/arch/x86/ioapic.c
 
-        src/cpu.c
-        src/proc/proc.c
-        src/kmain.c
-        src/time/systick.c
-        src/util/kprintf.c 
-        src/util/string.c src/mem/page_alloc.c include/mem/boot_alloc.h src/mem/boot_alloc.c
-        src/util/helpers.c src/spinlock.c src/device/uart/uart.c 
+        src/mem/boot_alloc.c
+        src/mem/page_alloc.c 
         src/mem/memlayout.c 
-        )
+        
+        src/time/systick.c
+        
+        src/proc/proc.c
+        
+        src/device/uart/uart.c 
+        
+        src/cpu.c
+        src/spinlock.c 
+
+        src/kmain.c
+        
+        src/util/kprintf.c 
+        src/util/string.c 
+        src/util/helpers.c 
+)
 
 include_directories(include)
 
-set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64")
+set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64 -Wall -Werror-implicit-function-declaration")
 set(CMAKE_ASM_FLAGS "-m64 -x assembler-with-cpp")
 
 set(CMAKE_C_FLAGS_RELEASE "-O2")

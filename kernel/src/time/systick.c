@@ -14,13 +14,13 @@ uint64_t systick(void)
     return time;
 }
 
-uint64_t systick_init(void)
+void systick_init(void)
 {
     init_lock(&sys_tick_lock, "sys_tick");
     sys_tick = 0;
 }
 
-uint64_t systick_increment(void)
+void systick_increment(void)
 {
     acquire(&sys_tick_lock);
     sys_tick++;
