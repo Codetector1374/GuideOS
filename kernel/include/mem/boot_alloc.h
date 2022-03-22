@@ -23,4 +23,6 @@ void boot_alloc_init(void* start_kva, size_t size);
  */
 void* boot_alloc(size_t size);
 
+void* boot_alloc_disable(void);
+
 #endif //GUIDE_OS_BOOT_ALLOC_H

@@ -18,13 +18,14 @@
 // Paging related defines
 #define NPTENTRIES  (512)
 
-#define PG_SIZE       (4096)
+#define PG_SIZE       (4096UL)
 #define L2_HUGE_SIZE  (PG_SIZE * NPTENTRIES)
 #define L3_HUGE_SIZE  (L2_HUGE_SIZE * NPTENTRIES)
 
 #define PGROUNDUP(sz)  (((sz)+PG_SIZE-1) & ~(PG_SIZE-1))
 #define PGROUNDDOWN(a) (((a)) & ~(PG_SIZE-1))
 
+#define PG_INDEX(ADDR)    ((ADDR) / PG_SIZE)
 
 
 extern  size_t kern_end[];

@@ -45,7 +45,7 @@ set(CMAKE_C_FLAGS_DEBUG "-O2 -ggdb")
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj
         COMMAND ${CMAKE_LINKER} -m elf_x86_64 -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj $<TARGET_OBJECTS:kernel>
-        COMMAND ${CMAKE_OBJDUMP} -M intel -D ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
+        COMMAND ${CMAKE_OBJDUMP} -M intel -S ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
         COMMAND ${CMAKE_OBJDUMP} -x ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.objdump
         COMMAND_EXPAND_LISTS
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm

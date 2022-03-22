@@ -41,3 +41,16 @@ void *boot_alloc(size_t size) {
 
     return NULL;
 }
+
+/**
+ * @brief Disable boot allocator. This MUST be called before interrupt or SMP
+ * is enabled. As the boot allocator is not thread safe.
+ * 
+ * @return void* pointer to the first byte of availiable memory
+ */
+void *boot_alloc_disable() {
+    void* rtn_ptr = default_zone.begin_kva;
+    default_zone.begin_kva = 0;
+    default_zone.end_kva = 0;
+    return rtn_ptr;
+}
