@@ -160,10 +160,16 @@ void pgalloc_free_range(void *start_va, void *end_va)
 
 void* pgalloc_allocate(int order)
 {
-  return s_alloc_block(order);
+  void* rtn;
+  acquire(&pgalloc_lock);
+  rtn = s_alloc_block(order);
+  release(&pgalloc_lock);
+  return rtn;
 }
 
 void pgalloc_free(void* addr, int order)
 {
-  return s_free_block(PG_INDEX(KV2P(addr)), order);
+  acquire(&pgalloc_lock);
+  s_free_block(PG_INDEX(KV2P(addr)), order);
+  release(&pgalloc_lock);
 }
