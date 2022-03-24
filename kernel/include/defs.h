@@ -17,6 +17,8 @@
 #define ROUNDUP_PWR2(x, sz)      (((x) + ((sz) - 1UL)) & ~((sz) - 1UL))
 #define ROUNDDOWN_PWR2(x, sz)    ((x) & ~((sz) - 1))
 
+#define MIN(a, b)               ((a) < (b) ? (a) : (b))
+
 // Arch specific implementaiton
 void panic(char *s);
 bool disable_interrupt(void);
@@ -40,5 +42,13 @@ u16 cpu_id(void);
  * @return struct cpu* 
  */
 struct cpu* cur_cpu(void);
+
+
+// kmalloc.c
+void *kmalloc(size_t size);
+void *krealloc(void *ptr, size_t size);
+void *kcalloc(size_t nmemb, size_t size);
+void  kfree(void *ptr);
+
 
 #endif //GUIDE_OS_DEFS_H

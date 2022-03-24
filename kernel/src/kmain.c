@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "mem/boot_alloc.h"
+#include "mem/kmalloc.h"
 #include "mem/vm.h"
 #include "mem/page_alloc.h"
 #include "arch/x86/interrupt.h"
@@ -16,6 +17,7 @@ void kmain(void)
   vmm_init();
   pgalloc_init(4UL * 1024 * 1024 * 1024); // TODO: remove hard code 4G
   void *bootalloc_avail = boot_alloc_disable();
+  kmalloc_init();
   // Interrupt related
   lapic_init();       // LAPIC
   cpu_bsp_init();     // We need to do this early so we can have locks
@@ -34,6 +36,9 @@ void kmain(void)
 void mpmain() 
 {
   kprintf("cpu %u started...\n", cpu_id());
+  void *mem = kmalloc(128);
+  if (!mem) panic("???");
+  kfree(mem);
   sti();
   for (;;) {
     wait_for_interrupt();

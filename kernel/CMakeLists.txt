@@ -17,6 +17,7 @@ add_library(kernel OBJECT
         src/mem/boot_alloc.c
         src/mem/page_alloc.c 
         src/mem/memlayout.c 
+        src/mem/kmalloc.c
         
         src/time/systick.c
         
