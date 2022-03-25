@@ -60,11 +60,17 @@ ioapic_init(void)
 }
 
 void
-ioapic_enable(u8 irq, u8 apicid)
+ioapic_unmask(u8 irq, u8 vector, u8 apicid)
 {
   // Mark interrupt edge-triggered, active high,
   // enabled, and routed to the given cpunum,
   // which happens to be that cpu's APIC ID.
-  ioapicwrite(IOAPIC_REG_TABLE+2*irq, IDT_ENTRY_IRQ_0 + irq);
+  ioapicwrite(IOAPIC_REG_TABLE+2*irq, vector);
   ioapicwrite(IOAPIC_REG_TABLE+2*irq+1, (u32)apicid << 24);
+}
+
+void ioapic_mask(u8 irq)
+{
+  ioapicwrite(IOAPIC_REG_TABLE+2*irq, INT_DISABLED | IDT_ENTRY_IRQ_SPURIOUS);
+  ioapicwrite(IOAPIC_REG_TABLE+2*irq+1, 0);
 }
