@@ -20,6 +20,7 @@
 
 #define IDT_ENTRY_IRQ_0                 32
 #define IDT_ENTRY_IRQ_TIMER             (IDT_ENTRY_IRQ_0 + 0)
+#define IDT_ENTRY_IRQ_COM1              (IDT_ENTRY_IRQ_0 + 4)
 #define IDT_ENTRY_IRQ_ERROR             (IDT_ENTRY_IRQ_0 + 19)
 #define IDT_ENTRY_IRQ_SPURIOUS          (IDT_ENTRY_IRQ_0 + 31)
 

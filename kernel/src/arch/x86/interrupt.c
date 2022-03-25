@@ -40,6 +40,10 @@ void handle_interrupt(trapframe_t *tf) {
       systick_increment();
       lapic_eoi();
       return;
+    case IDT_ENTRY_IRQ_COM1:
+      kprintf("com1 interrupt\n");
+      lapic_eoi();
+      return;
     case IDT_ENTRY_PAGE_FAULT:
       size_t faulting_addr = rcr2();
       kprintf("pg fault on %p at \nrip=%p\n", faulting_addr, tf->rip);

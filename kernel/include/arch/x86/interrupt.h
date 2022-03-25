@@ -94,6 +94,7 @@ void pic_init(void);
 
 // ioapic.c
 void ioapic_init(void);
-void ioapic_enable(u8 irq, u8 apicid);
+void ioapic_unmask(u8 irq, u8 vector, u8 apicid);
+void ioapic_mask(u8 irq);
 
 #endif //GUIDE_OS_INTERRUPT_H

@@ -7,6 +7,7 @@
 #include "arch/x86/instructions.h"
 #include "systick.h"
 #include "cpu.h"
+#include "device/uart.h"
 
 __attribute__((noreturn)) void mpmain(void);
 
@@ -35,6 +36,10 @@ void kmain(void)
 
 void mpmain() 
 {
+  uart_device_t uart;
+  int uart_init = uart_pio_init(&uart, UART_COM1);
+  ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
+  kprintf("uart init with result = %d\n", uart_init);
   kprintf("cpu %u started...\n", cpu_id());
   void *mem = kmalloc(128);
   if (!mem) panic("???");
