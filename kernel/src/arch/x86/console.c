@@ -5,6 +5,7 @@
 #include "string.h"
 #include "defs.h"
 #include "spinlock.h"
+#include "device/uart.h"
 
 #define NUM_COL     80
 #define NUM_ROW     25
@@ -16,8 +17,19 @@ static u16* crt = (u16*) P2KV(0xb8000);
 
 static spinlock_t console_lock;
 
+static uart_device_t con_uart;
+static bool uart_enable;
+
 void console_init() {
     init_lock(&console_lock, "console");
+    if (!uart_pio_init(&con_uart, UART_COM1))
+    {
+        uart_enable = TRUE;
+    } 
+    else
+    {
+        uart_enable = FALSE;
+    }
 }
 
 void cga_putchar(int c)
@@ -58,5 +70,13 @@ void cga_putchar(int c)
 void putchar(int c) {
     acquire(&console_lock);
     cga_putchar(c);
+    if (uart_enable)
+    {
+        if (c == '\n')
+        {
+            uart_putc(&con_uart, '\r');
+        }
+        uart_putc(&con_uart, c);
+    }
     release(&console_lock);
 }

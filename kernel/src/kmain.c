@@ -36,10 +36,7 @@ void kmain(void)
 
 void mpmain() 
 {
-  uart_device_t uart;
-  int uart_init = uart_pio_init(&uart, UART_COM1);
-  ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
-  kprintf("uart init with result = %d\n", uart_init);
+  // ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
   kprintf("cpu %u started...\n", cpu_id());
   void *mem = kmalloc(128);
   if (!mem) panic("???");

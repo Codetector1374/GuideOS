@@ -26,5 +26,6 @@ typedef struct uart_device {
  */
 int uart_pio_init(uart_device_t *u, u16 pio_base);
 int uart_mmio_init(uart_device_t *u, void* mmio_base);
+void uart_putc(uart_device_t *u, int c);
 
 #endif //GUIDE_OS_UART_H

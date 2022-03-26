@@ -62,3 +62,10 @@ int uart_mmio_init(uart_device_t *u, void* mmio_base)
 {
   return 1;
 }
+
+void uart_putc(uart_device_t *u, int c)
+{
+  if (!u) return;
+  while((uart_read(u, 5) & 0x20) == 0);
+  uart_write(u, 0, c);
+}
