@@ -9,6 +9,7 @@
 #include "arch/x86/interrupt.h"
 #include "arch/x86/system.h"
 #include "systick.h"
+#include "console.h"
 
 #pragma pack(push, 1)
 typedef struct {
@@ -41,7 +42,7 @@ void handle_interrupt(trapframe_t *tf) {
       lapic_eoi();
       return;
     case IDT_ENTRY_IRQ_COM1:
-      kprintf("com1 interrupt\n");
+      console_isr_handler();
       lapic_eoi();
       return;
     case IDT_ENTRY_PAGE_FAULT:

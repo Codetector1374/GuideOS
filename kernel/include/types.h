@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint-gcc.h>
+#include "error.h"
 
 typedef uint64_t    u64;
 typedef uint32_t    u32;

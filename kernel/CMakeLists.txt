@@ -33,6 +33,7 @@ add_library(kernel OBJECT
         src/util/kprintf.c 
         src/util/string.c 
         src/util/helpers.c 
+        src/util/fifo.c
 )
 
 include_directories(include)
