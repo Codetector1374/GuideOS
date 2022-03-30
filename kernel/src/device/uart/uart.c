@@ -40,6 +40,13 @@ static int uart_init(uart_device_t* u) {
   }
 
   uart_write(u, 1, 0x1); // Enable Rx and Tx Interrupt
+  
+  {
+    const char* init_string = "..uart..\n";
+    int i = 0;
+    while(init_string[i] != '\0')
+      uart_putc(u, init_string[i++]);
+  }
   return 0;
 }
 
@@ -51,12 +58,22 @@ int uart_pio_init(uart_device_t* u, u16 pio_base) {
 
 int uart_mmio_init(uart_device_t* u, void* mmio_base) { return 1; }
 
-void uart_putc(uart_device_t* u, int c) {
-  if (!u)
-    return;
+void s_uart_putc(uart_device_t *u, int c) {
   while ((uart_read(u, 5) & 0x20) == 0)
     ;
   uart_write(u, 0, c);
+}
+
+void uart_putc(uart_device_t* u, int c) {
+  if (!u)
+    return;
+  if (c == BACKSPACE) {
+    s_uart_putc(u, '\x08');
+    s_uart_putc(u, ' ');
+    s_uart_putc(u, '\x08');
+  } else {
+    s_uart_putc(u, c);
+  }
 }
 
 bool uart_hasbyte(uart_device_t* u) {

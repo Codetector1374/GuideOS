@@ -20,3 +20,7 @@ typedef size_t      uptr;
 
 #define FALSE   0
 #define TRUE    1
+
+
+#define BACKSPACE 0x100
+

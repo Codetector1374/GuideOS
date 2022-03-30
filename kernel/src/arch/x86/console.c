@@ -12,7 +12,6 @@
 #define NUM_COL 80
 #define NUM_ROW 25
 
-#define BACKSPACE 0x100
 #define CRTPORT 0x3d4
 
 static u16* crt = (u16*)P2KV(0xb8000);
@@ -32,7 +31,7 @@ static spinlock_t console_fifo_write_lock;
 void console_init() {
   init_lock(&console_lock, "console");
   init_lock(&console_fifo_write_lock, "console fifo");
-  char *con_buffer = kmalloc(256); // 256 byte buffer is quite large for console
+  u8 *con_buffer = kmalloc(256); // 256 byte buffer is quite large for console
   if (!con_buffer) panic("console init oom");
   spsc_fifo_init(&console_fifo, con_buffer, 256);
   if (!uart_pio_init(&con_uart, UART_COM1)) {
@@ -106,4 +105,21 @@ void console_isr_handler(void) {
       release(&console_fifo_write_lock);
     }
   }
+}
+
+int console_getc(void) {
+  int rtn;
+  u8 val;
+  acquire(&console_lock);
+  if (spsc_fifo_read(&console_fifo, &val) < 0) {
+    rtn = -1;
+  } else {
+    // Filter Char
+    rtn = val;
+    if (val == 0x7F || val == 0x08) {
+      rtn = BACKSPACE;
+    }
+  }
+  release(&console_lock);
+  return rtn;
 }
