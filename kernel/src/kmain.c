@@ -41,9 +41,6 @@ void mpmain()
 {
   // ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
   kprintf("cpu %u started...\n", cpu_id());
-  void *mem = kmalloc(128);
-  if (!mem) panic("???");
-  kfree(mem);
   sti();
   for (;;) {
     wait_for_interrupt();
