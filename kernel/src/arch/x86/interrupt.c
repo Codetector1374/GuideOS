@@ -29,6 +29,10 @@ void handle_interrupt(trapframe_t *tf) {
     kprintf("DF rip = %p\n", tf->rip);
     panic("A double fault has occurred");
   }
+  if (tf->trap_no == IDT_ENTRY_GP) {
+    kprintf("rip = %p\n", tf->rip);
+    panic("GP");
+  }
 
   switch (tf->trap_no) {
     case IDT_ENTRY_IRQ_SPURIOUS:

@@ -51,8 +51,8 @@ struct segment_descriptor {
 };
 _Static_assert(sizeof(struct segment_descriptor) == 8, "segment_descriptor packing wrong");
 
-#define GDT_DESC_TYPE_CODE  0b11000
-#define GDT_DESC_TYPE_DATA  0b10000
+#define GDT_DESC_TYPE_CODE  0b11010
+#define GDT_DESC_TYPE_DATA  0b10010
 #define GDT_DESC_TYPE_TSS   0b01001
 
 #define GDT_DESC_FLAGS_L    0b0010

@@ -4,6 +4,7 @@
 
 .extern handle_interrupt
 .globl trap_enter_all
+.globl return_to_trapframe
 
 trap_enter_all:
     push r15
@@ -24,6 +25,7 @@ trap_enter_all:
     # Setup Call
     mov rdi, rsp
     call handle_interrupt
+return_from_isr:
     pop rax
     pop rcx
     pop rdx
@@ -41,3 +43,7 @@ trap_enter_all:
     pop r15
     add rsp, 16 # Pop trap_no and fake error_code
     iretq
+
+return_to_trapframe:
+    mov rsp, rdi
+    jmp return_from_isr

@@ -10,3 +10,4 @@
  */
 void vmm_init(void);
 void vmm_load_ktable(void);
+void* vmm_get_kernel_pgtable(void);

@@ -8,6 +8,7 @@
 #include "systick.h"
 #include "cpu.h"
 #include "device/uart.h"
+#include "proc.h"
 
 __attribute__((noreturn)) void mpmain(void);
 
@@ -34,14 +35,19 @@ void kmain(void)
   console_init();
   systick_init();
 
+  // Initialize pTable
+  proc_init();
+
   mpmain();
 }
 
 void mpmain() 
 {
   // ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
-  kprintf("cpu %u started...\n", cpu_id());
-  sti();
+  kprintf("cpu %u started\n", cpu_id());
+  // sti();
+  sched_start();
+  kprintf("sched failed to start");
   for (;;) {
     wait_for_interrupt();
   }

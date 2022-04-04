@@ -47,7 +47,7 @@ void gdt_setup(struct cpu *cpu)
     gdt->seg_descs[GDT_KERNEL_CODE].type = GDT_DESC_TYPE_CODE;
     gdt->seg_descs[GDT_KERNEL_CODE].dpl = 0;
     gdt->seg_descs[GDT_KERNEL_CODE].p = 1;
-    gdt->seg_descs[GDT_KERNEL_CODE].flags = GDT_DESC_FLAGS_L;
+    gdt->seg_descs[GDT_KERNEL_CODE].flags = GDT_DESC_FLAGS_L | GDT_DESC_FLAGS_G;
     // KDATA
     gdt->seg_descs[GDT_KERNEL_DATA] = gdt->seg_descs[GDT_KERNEL_CODE];
     gdt->seg_descs[GDT_KERNEL_DATA].type = GDT_DESC_TYPE_DATA;
@@ -56,7 +56,7 @@ void gdt_setup(struct cpu *cpu)
     gdt->seg_descs[GDT_USER_CODE] = gdt->seg_descs[GDT_KERNEL_CODE];
     gdt->seg_descs[GDT_USER_CODE].dpl = 3;
     // UDATA
-    gdt->seg_descs[GDT_USER_DATA] = gdt->seg_descs[GDT_USER_DATA];
+    gdt->seg_descs[GDT_USER_DATA] = gdt->seg_descs[GDT_KERNEL_DATA];
     gdt->seg_descs[GDT_USER_DATA].dpl = 3;
     
     struct task_state_segment* tss = &cpu->tss;

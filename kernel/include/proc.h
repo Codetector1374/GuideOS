@@ -21,3 +21,4 @@ struct proc {
 };
 
 void proc_init(void);
+void sched_start(void);
