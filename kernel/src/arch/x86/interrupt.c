@@ -10,6 +10,7 @@
 #include "arch/x86/system.h"
 #include "systick.h"
 #include "console.h"
+#include "proc.h"
 
 #pragma pack(push, 1)
 typedef struct {
@@ -25,6 +26,7 @@ static idt64_t idt;
 extern const uint64_t vectors[];
 
 void handle_interrupt(trapframe_t *tf) {
+  bool bCtxSwPending = FALSE;
   if (tf->trap_no == IDT_ENTRY_DOUBLE_FAULT) {
     kprintf("DF rip = %p\n", tf->rip);
     panic("A double fault has occurred");
@@ -37,18 +39,21 @@ void handle_interrupt(trapframe_t *tf) {
   switch (tf->trap_no) {
     case IDT_ENTRY_IRQ_SPURIOUS:
       lapic_eoi();
-      return;
+      break;
     case IDT_ENTRY_BP:
       kprintf("breakpoint at pc: %p\n", tf->rip);
-      return;
-    case IDT_ENTRY_IRQ_0:
-      systick_increment();
+      break;
+    case IDT_ENTRY_IRQ_0: // LAPIC Timer
+      if (cpu_id() == 0) {
+        systick_increment();
+      }
+      bCtxSwPending = TRUE;
       lapic_eoi();
-      return;
+      break;
     case IDT_ENTRY_IRQ_COM1:
       console_isr_handler();
       lapic_eoi();
-      return;
+      break;
     case IDT_ENTRY_PAGE_FAULT:
       size_t faulting_addr = rcr2();
       kprintf("pg fault on %p at \nrip=%p\n", faulting_addr, tf->rip);
@@ -56,16 +61,20 @@ void handle_interrupt(trapframe_t *tf) {
     default:
       kprintf("unhandled %d\n", tf->trap_no);
       panic("interrupt_handler");
-      return;
+      break;
+  }
+
+  if (bCtxSwPending) {
+    sched_switch(tf, RUNNABLE);
   }
 }
 
 void interrupt_init(void) {
   memset(&idt, 0, sizeof(idt));
   for (int i = 0; i < 256; ++i) {
-    idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i], 
-      0, 
-      IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_KRNL | IDT_GATE_FLAGS_INT, 
+    idt.entries[i] = mk_idt_entry((int_handler_t) vectors[i],
+      0,
+      IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_KRNL | IDT_GATE_FLAGS_INT,
       GDT_KERNEL_CODE * 8);
   }
 

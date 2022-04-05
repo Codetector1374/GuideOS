@@ -22,6 +22,7 @@ add_library(kernel OBJECT
         src/time/systick.c
         
         src/proc/proc.c
+        src/proc/sched.c
         
         src/device/uart/uart.c 
         

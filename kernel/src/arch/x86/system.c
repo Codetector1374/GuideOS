@@ -14,7 +14,7 @@ bool disable_interrupt()
 {
     size_t flags = read_flags();
     cli();
-    return (flags & FL_IF) > 0;
+    return (flags & RFLAGS_IF) > 0;
 }
 
 void enable_interrupt() {

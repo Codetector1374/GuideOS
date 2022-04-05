@@ -22,7 +22,7 @@ u16 cpu_id() {
 
 struct cpu* cur_cpu(void) {
     u8 apicid;
-    if (read_flags() & FL_IF) {
+    if (read_flags() & RFLAGS_IF) {
         panic("cur_cpu with IF");
     }
 

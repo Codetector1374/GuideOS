@@ -41,14 +41,29 @@ void kmain(void)
   mpmain();
 }
 
-void mpmain() 
-{
-  // ioapic_unmask(4, IDT_ENTRY_IRQ_0 + 4, lapic_id());
-  kprintf("cpu %u started\n", cpu_id());
-  // sti();
-  sched_start();
-  kprintf("sched failed to start");
-  for (;;) {
+void test_func1(void) {
+  for(;;) {
     wait_for_interrupt();
+    kprintf("a");
   }
+}
+
+void test_2(void) {
+  for(;;) {
+    wait_for_interrupt();
+    kprintf("b");
+  }
+}
+
+void mpmain()
+{
+  struct proc* p = proc_alloc();
+  sched_create_kproc(p, test_func1);
+  struct proc* pp = proc_alloc();
+  sched_create_kproc(pp, test_2);
+  sched_add(pp);
+  sched_add(p);
+  sched_start();
+  panic("sched failed to start");
+  for(;;);
 }

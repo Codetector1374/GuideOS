@@ -9,7 +9,7 @@
 
 #include "types.h"
 
-#define FL_IF           0x00000200
+#define RFLAGS_IF           0x00000200
 
 static inline void
 cli(void)
