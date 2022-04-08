@@ -6,7 +6,7 @@
 #define IO_PIC1         0x20    // Master (IRQs 0-7)
 #define IO_PIC2         0xA0    // Slave (IRQs 8-15)
 
-// Don't use the 8259A interrupt controllers.  Xv6 assumes SMP hardware.
+// Don't use the 8259A interrupt controllers.  assumes SMP hardware.
 void
 pic_init(void)
 {

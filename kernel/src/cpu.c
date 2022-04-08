@@ -37,6 +37,14 @@ struct cpu* cur_cpu(void) {
     return 0;
 }
 
+struct proc* curproc(void) {
+    struct proc* c;
+    push_int_disable();
+    c = cur_cpu()->proc;
+    pop_int_disable();
+    return c;
+}
+
 void push_int_disable(void)
 {
     bool enabled = disable_interrupt();
@@ -51,7 +59,8 @@ void push_int_disable(void)
 void pop_int_disable(void)
 {
     struct cpu* c = cur_cpu();
-    if (--(c->int_disable_layer) < 0)
+    c->int_disable_layer--;
+    if (c->int_disable_layer < 0)
     {
         panic("popcli");
     }

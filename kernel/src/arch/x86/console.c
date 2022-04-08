@@ -28,12 +28,14 @@ static bool uart_enable;
 static spsc_fifo_t console_fifo;
 static spinlock_t console_fifo_write_lock;
 
+#define CON_FIFO_SIZE 16
+
 void console_init() {
   init_lock(&console_lock, "console");
   init_lock(&console_fifo_write_lock, "console fifo");
-  u8 *con_buffer = kmalloc(256); // 256 byte buffer is quite large for console
+  u8 *con_buffer = kmalloc(CON_FIFO_SIZE); // CON_FIFO_SIZE byte buffer is quite large for console
   if (!con_buffer) panic("console init oom");
-  spsc_fifo_init(&console_fifo, con_buffer, 256);
+  spsc_fifo_init(&console_fifo, con_buffer, CON_FIFO_SIZE);
   if (!uart_pio_init(&con_uart, UART_COM1)) {
     ioapic_unmask(4, IDT_ENTRY_IRQ_COM1, lapic_id());
     uart_enable = TRUE;
@@ -79,13 +81,13 @@ void cga_putchar(int c) {
 
 void putchar(int c) {
   acquire(&console_lock);
-  cga_putchar(c);
   if (uart_enable) {
     if (c == '\n') {
       uart_putc(&con_uart, '\r');
     }
     uart_putc(&con_uart, c);
   }
+  cga_putchar(c);
   release(&console_lock);
 }
 
@@ -97,13 +99,13 @@ void putchar(int c) {
 void console_isr_handler(void) {
   if (uart_enable) {
     int uartc;
+    acquire(&console_fifo_write_lock);
     while ((uartc = uart_getc(&con_uart)) >= 0) {
-      acquire(&console_fifo_write_lock);
       if (spsc_fifo_write(&console_fifo, (char)uartc)) {
-        kprintf("uart buffer full\n");
+        panic("uart buffer full\n");
       }
-      release(&console_fifo_write_lock);
     }
+    release(&console_fifo_write_lock);
   }
 }
 

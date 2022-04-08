@@ -17,6 +17,8 @@ struct proc {
   enum proc_type type;
   char name[32];
 
+  void* chan;
+
   u16 pid;
   bool killed;
 };
@@ -30,4 +32,4 @@ void sched_init(void);
 void sched_add(struct proc* proc);
 void sched_start(void);
 void sched_create_kproc(struct proc* proc, void (*func)(void));
-void sched_switch(trapframe_t *tf, enum proc_state switchOutReason);
+void sched_switch(trapframe_t *tf);

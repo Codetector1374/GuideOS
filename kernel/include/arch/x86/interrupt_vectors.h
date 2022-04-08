@@ -25,4 +25,6 @@
 #define IDT_ENTRY_IRQ_ERROR             (IDT_ENTRY_IRQ_0 + 19)
 #define IDT_ENTRY_IRQ_SPURIOUS          (IDT_ENTRY_IRQ_0 + 31)
 
+#define VECTOR_SYSCALL                  0x80
+
 #endif //GUIDE_OS_INTERRUPT_VECTORS_H

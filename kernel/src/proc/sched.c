@@ -25,7 +25,7 @@ struct scheduler {
 } sched;
 
 void sched_init(void) {
-  // Initialize Scheduler 
+  // Initialize Scheduler
   init_lock(&sched.lock, "sched");
   sched.ready_queue.size = 0;
   sched.ready_queue.head = NULL;
@@ -94,17 +94,20 @@ void sched_add(struct proc* proc) {
   release(&sched.lock);
 }
 
-void sched_switch(trapframe_t *tf, enum proc_state switchOutReason) {
+void sched_switch(trapframe_t *tf) {
+  push_int_disable();
   struct cpu* currentCpu = cur_cpu();
-  struct proc* curproc = currentCpu->proc;
+  pop_int_disable();
+  struct proc* currentProc = curproc();
   struct proc* newProc = NULL;
-  
   acquire(&sched.lock);
 
   // Save state and schedule out
-  curproc->state = switchOutReason;
-  if (switchOutReason == RUNNABLE && curproc != &idle_proc[cpu_id()]) {
-    s_sched_add(curproc);
+  if (currentProc->state == RUNNING) {
+    panic("switching out running?");
+  }
+  if (currentProc->state == RUNNABLE && currentProc != &idle_proc[cpu_id()]) {
+    s_sched_add(currentProc);
   }
 
   if (sched.ready_queue.size > 0) {
@@ -117,14 +120,14 @@ void sched_switch(trapframe_t *tf, enum proc_state switchOutReason) {
     }
     kfree(head);
   }
-  
+
   if (newProc == NULL) {
     newProc = &idle_proc[cpu_id()];
   }
 
   newProc->state = RUNNING;
-  if (newProc != curproc) {
-    curproc->tf = *tf;
+  if (newProc != currentProc) {
+    currentProc->tf = *tf;
     *tf = newProc->tf;
     currentCpu->proc = newProc;
   }

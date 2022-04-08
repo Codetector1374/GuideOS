@@ -15,6 +15,8 @@ set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS}")
 
 add_subdirectory(stage1_bootloader)
 add_subdirectory(stage2_bootloader)
+
+add_subdirectory(lib/libsys)
 add_subdirectory(kernel)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/guideos.img

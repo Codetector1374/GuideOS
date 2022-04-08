@@ -11,6 +11,7 @@
 #include "systick.h"
 #include "console.h"
 #include "proc.h"
+#include "syscall.h"
 
 #pragma pack(push, 1)
 typedef struct {
@@ -26,7 +27,6 @@ static idt64_t idt;
 extern const uint64_t vectors[];
 
 void handle_interrupt(trapframe_t *tf) {
-  bool bCtxSwPending = FALSE;
   if (tf->trap_no == IDT_ENTRY_DOUBLE_FAULT) {
     kprintf("DF rip = %p\n", tf->rip);
     panic("A double fault has occurred");
@@ -47,12 +47,17 @@ void handle_interrupt(trapframe_t *tf) {
       if (cpu_id() == 0) {
         systick_increment();
       }
-      bCtxSwPending = TRUE;
+      if (curproc()->state == RUNNING) {
+        curproc()->state = RUNNABLE;
+      }
       lapic_eoi();
       break;
     case IDT_ENTRY_IRQ_COM1:
       console_isr_handler();
       lapic_eoi();
+      break;
+    case VECTOR_SYSCALL:
+      handle_syscall(tf);
       break;
     case IDT_ENTRY_PAGE_FAULT:
       size_t faulting_addr = rcr2();
@@ -64,8 +69,8 @@ void handle_interrupt(trapframe_t *tf) {
       break;
   }
 
-  if (bCtxSwPending) {
-    sched_switch(tf, RUNNABLE);
+  if (curproc()->state != RUNNING) {
+    sched_switch(tf);
   }
 }
 
@@ -77,6 +82,10 @@ void interrupt_init(void) {
       IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_KRNL | IDT_GATE_FLAGS_INT,
       GDT_KERNEL_CODE * 8);
   }
+  idt.entries[VECTOR_SYSCALL] = mk_idt_entry((int_handler_t) vectors[VECTOR_SYSCALL],
+    0,
+    IDT_GATE_FLAGS_P | IDT_GATE_FLAGS_DPL_USER | IDT_GATE_FLAGS_TRAP,
+    GDT_KERNEL_CODE * 8);
 
   load_idt(&idt);
 }

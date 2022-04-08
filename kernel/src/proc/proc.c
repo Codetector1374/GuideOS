@@ -40,3 +40,11 @@ struct proc* proc_alloc(void) {
   return selected;
 }
 
+void wait(void* chan) {
+  struct proc* currentProc = curproc();
+  acquire(&ptable.lock);
+  currentProc->chan = chan;
+  currentProc->state = SLEEPING;
+  release(&ptable.lock);
+  asm volatile("int $0x80");
+}

@@ -31,18 +31,18 @@ void pop_int_disable(void);
 /**
  * @brief get the current cpu id between 0 and NCPU
  * @note must be called with interrupt disabled
- * 
- * @return u16 
+ *
+ * @return u16
  */
 u16 cpu_id(void);
 /**
  * @brief get a pointer to the current cpu strcture.
  * @note must be called with interrupt disabled
- * 
- * @return struct cpu* 
+ *
+ * @return struct cpu*
  */
 struct cpu* cur_cpu(void);
-
+struct proc* curproc(void);
 
 // kmalloc.c
 void *kmalloc(size_t size);
@@ -50,5 +50,7 @@ void *krealloc(void *ptr, size_t size);
 void *kcalloc(size_t nmemb, size_t size);
 void  kfree(void *ptr);
 
+// systick.c
+void spin_sleep(uint64_t ticks);
 
 #endif //GUIDE_OS_DEFS_H

@@ -41,27 +41,12 @@ void kmain(void)
   mpmain();
 }
 
-void test_func1(void) {
-  for(;;) {
-    wait_for_interrupt();
-    kprintf("a");
-  }
-}
-
-void test_2(void) {
-  for(;;) {
-    wait_for_interrupt();
-    kprintf("b");
-  }
-}
+void kshell_main(void);
 
 void mpmain()
 {
   struct proc* p = proc_alloc();
-  sched_create_kproc(p, test_func1);
-  struct proc* pp = proc_alloc();
-  sched_create_kproc(pp, test_2);
-  sched_add(pp);
+  sched_create_kproc(p, kshell_main);
   sched_add(p);
   sched_start();
   panic("sched failed to start");
