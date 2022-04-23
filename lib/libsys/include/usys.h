@@ -8,4 +8,4 @@ uint64_t syscall1(uint64_t, uint64_t);
 // uint64_t syscall3(uint64_t, uint64_t, uint64_t, uint64_t);
 
 
-void pause(void);
+void yield(void);

@@ -31,6 +31,7 @@ struct proc* proc_alloc(void) {
   for(size_t i = 0; i < NPROC; i++) {
     if (ptable.proc[i].state == UNUSED) {
       selected = &ptable.proc[i];
+      memset(selected, 0, sizeof(struct proc));
       selected->state = CREATION;
       selected->pid = (ptable.next_pid++);
       break;

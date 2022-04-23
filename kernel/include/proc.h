@@ -19,8 +19,11 @@ struct proc {
 
   void* chan;
 
+  uint32_t int_disable_layer;
+
   u16 pid;
   bool killed;
+  bool int_enabled;
 };
 
 extern struct proc idle_proc[NCPU];

@@ -103,9 +103,6 @@ void sched_switch(trapframe_t *tf) {
   acquire(&sched.lock);
 
   // Save state and schedule out
-  if (currentProc->state == RUNNING) {
-    panic("switching out running?");
-  }
   if (currentProc->state == RUNNABLE && currentProc != &idle_proc[cpu_id()]) {
     s_sched_add(currentProc);
   }
@@ -127,9 +124,15 @@ void sched_switch(trapframe_t *tf) {
 
   newProc->state = RUNNING;
   if (newProc != currentProc) {
+    currentProc->int_disable_layer = currentCpu->int_disable_layer;
+    currentProc->int_enabled = currentCpu->int_enabled;
     currentProc->tf = *tf;
-    *tf = newProc->tf;
+    
     currentCpu->proc = newProc;
+
+    *tf = newProc->tf;
+    currentCpu->int_disable_layer = currentProc->int_disable_layer;
+    currentCpu->int_enabled = currentProc->int_enabled;
   }
   release(&sched.lock);
 }

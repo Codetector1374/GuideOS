@@ -1,3 +1,3 @@
 #pragma once
 
-#define SYS_PAUSE         10
+#define SYS_YIELD         1

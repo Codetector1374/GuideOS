@@ -13,8 +13,8 @@ uint64_t syscall1(uint64_t syscallNo, uint64_t arg0) {
   return rtnval;
 }
 
-void pause(void) {
-  syscall0(SYS_PAUSE);
+void yield(void) {
+  syscall0(SYS_YIELD);
 }
 
 // uint64_t syscall2(uint64_t, uint64_t, uint64_t);

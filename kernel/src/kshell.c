@@ -6,7 +6,6 @@
 #define CMD_MAX_LEN 1024
 
 void kshell_main(void) {
-  pause();
   kprintf("\n\n");
   size_t input_len = 0;
   u8 buffer[CMD_MAX_LEN];
@@ -17,7 +16,7 @@ void kshell_main(void) {
       int c;
       wait_for_interrupt();
       while((c = console_getc()) < 0) {
-        spin_sleep(1);
+        yield();
       }
       if (c == BACKSPACE && input_len > 0) {
         input_len--;
