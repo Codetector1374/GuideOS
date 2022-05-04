@@ -11,6 +11,7 @@ struct cpu {
     struct gdt gdt;
     struct task_state_segment tss;
     struct proc* proc;
+    struct proc_context* scheduler_ctx;
     u8 apicid;
 };
 

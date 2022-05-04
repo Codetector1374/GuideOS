@@ -9,3 +9,4 @@ uint64_t syscall1(uint64_t, uint64_t);
 
 
 void yield(void);
+int con_read(void);

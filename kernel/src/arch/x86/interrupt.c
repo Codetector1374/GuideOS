@@ -47,7 +47,7 @@ void handle_interrupt(trapframe_t *tf) {
       if (cpu_id() == 0) {
         systick_increment();
       }
-      if (curproc()->state == RUNNING) {
+      if (curproc() && curproc()->state == RUNNING) {
         curproc()->state = RUNNABLE;
       }
       lapic_eoi();
@@ -69,8 +69,8 @@ void handle_interrupt(trapframe_t *tf) {
       break;
   }
 
-  if (curproc()->state != RUNNING) {
-    sched_switch(tf);
+  if (curproc() && curproc()->state != RUNNING) {
+    sched_yield();
   }
 }
 

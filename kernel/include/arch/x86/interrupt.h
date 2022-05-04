@@ -64,7 +64,7 @@ typedef struct trapframe {
 #define IDT_GATE_FLAGS_P        0x80
 
 void handle_interrupt(trapframe_t *tf);
-__attribute__((noreturn)) void return_to_trapframe(trapframe_t *tf);
+__attribute__((noreturn)) void return_from_isr(void);
 
 inline
 interrupt_gate_64_t

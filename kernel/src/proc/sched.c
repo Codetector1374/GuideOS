@@ -38,38 +38,37 @@ __attribute__((noreturn)) static void idle_function(void) {
   }
 }
 
+
+void proc_kentry(void) {
+  struct proc* p = curproc();
+  if (p == NULL) {
+    panic("no curproc?");
+  }
+  release(&sched.lock);
+  // return to "caller"
+}
+
 void sched_create_kproc(struct proc* proc, void (*func)(void)) {
-  void* kStack = pgalloc_allocate(0);
-  void* kStackTop = (void*)(((size_t)kStack) + PG_SIZE);
   memcpy(proc->name, "idle", 5);
   proc->killed = 0;
-  proc->kstack = kStackTop;
   proc->pgtable = vmm_get_kernel_pgtable();
   proc->state = RUNNABLE;
   proc->type = KERNEL;
+  proc->ctx->rip = (size_t)(proc_kentry);
 
-  trapframe_t* tf = &(proc->tf);
+  trapframe_t* tf = proc->tf;
   memset(tf, 0, sizeof(trapframe_t));
   tf->rip = (size_t) func;
-  tf->rsp = (size_t) proc->kstack;
+  tf->rsp = (size_t) proc->kstack_top;
   tf->cs = GDT_KERNEL_CODE * 8;
   tf->ss = GDT_KERNEL_DATA * 8;
   tf->flags = RFLAGS_IF;
 }
 
 static void sched_setup_idle_proc(struct proc* idleProc) {
+  proc_kern_init(idleProc);
   idleProc->pid = 0;
   sched_create_kproc(idleProc, idle_function);
-}
-
-void sched_start(void) {
-  int cpu_idx = cpu_id();
-  struct proc* this_idle_proc = &idle_proc[cpu_idx];
-  this_idle_proc->state = RUNNING;
-  sched_setup_idle_proc(this_idle_proc);
-  cur_cpu()->proc = this_idle_proc;
-  kprintf("cpu %d starting...\n", cpu_idx);
-  return_to_trapframe(&this_idle_proc->tf);
 }
 
 static void s_sched_add(struct proc* proc) {
@@ -94,46 +93,81 @@ void sched_add(struct proc* proc) {
   release(&sched.lock);
 }
 
-void sched_switch(trapframe_t *tf) {
-  push_int_disable();
-  struct cpu* currentCpu = cur_cpu();
-  pop_int_disable();
-  struct proc* currentProc = curproc();
-  struct proc* newProc = NULL;
+void sched_start(void) {
+  struct proc *p;
+  struct cpu* c = cur_cpu();
+  c->proc = NULL;
+
+  // Setup Idle proc
+  int cpu_idx = cpu_id();
+  struct proc* this_idle_proc = &idle_proc[cpu_idx];
+  this_idle_proc->state = RUNNING;
+  sched_setup_idle_proc(this_idle_proc);
+  
+  enable_interrupt();
+
   acquire(&sched.lock);
+  for(;;) {
 
-  // Save state and schedule out
-  if (currentProc->state == RUNNABLE && currentProc != &idle_proc[cpu_id()]) {
-    s_sched_add(currentProc);
-  }
+    p = NULL;
 
-  if (sched.ready_queue.size > 0) {
-    sched.ready_queue.size--;
-    struct scheduler_queue_node* head = sched.ready_queue.head;
-    newProc = head->p;
-    sched.ready_queue.head = head->next;
-    if (sched.ready_queue.size == 0) {
-      sched.ready_queue.tail = NULL;
+    if (sched.ready_queue.size > 0) {
+      sched.ready_queue.size--;
+      struct scheduler_queue_node* head = sched.ready_queue.head;
+      p = head->p;
+      sched.ready_queue.head = head->next;
+      if (sched.ready_queue.size == 0) {
+        sched.ready_queue.tail = NULL;
+      }
+      kfree(head);
     }
-    kfree(head);
-  }
 
-  if (newProc == NULL) {
-    newProc = &idle_proc[cpu_id()];
-  }
+    if (p == NULL) {
+      p = &idle_proc[cpu_id()];
+    }
 
-  newProc->state = RUNNING;
-  if (newProc != currentProc) {
-    currentProc->int_disable_layer = currentCpu->int_disable_layer;
-    currentProc->int_enabled = currentCpu->int_enabled;
-    currentProc->tf = *tf;
-    
-    currentCpu->proc = newProc;
+    // Picked the new process to run
+    c->proc = p;
+    p->state = RUNNING;
+    // TODO: swap pgtable
+    sched_ctxsw(&(c->scheduler_ctx), p->ctx);
 
-    *tf = newProc->tf;
-    currentCpu->int_disable_layer = currentProc->int_disable_layer;
-    currentCpu->int_enabled = currentProc->int_enabled;
+    // Here when the proc done running
+    vmm_load_ktable();
+    if ((c->proc != NULL) && 
+        (c->proc->state == RUNNABLE) && 
+        (c->proc != &idle_proc[cpu_id()])) {
+      // Add current proc to ready queue if it is marked runnable
+      s_sched_add(c->proc);
+    }
+    c->proc = NULL;
   }
   release(&sched.lock);
 }
 
+void sched_switch_out(void) {
+  int intena;
+  struct proc* p = curproc();
+
+  if (!holding(&sched.lock)) {
+    panic("sched_swtich_out lock");
+  }
+  if (cur_cpu()->int_disable_layer != 1) {
+    panic("switch_out lock count");
+  }
+  if (p->state == RUNNING) {
+    panic("switching out running");
+  }
+  intena = cur_cpu()->int_enabled;
+  sched_ctxsw(&p->ctx, cur_cpu()->scheduler_ctx);
+  cur_cpu()->int_enabled = intena;
+}
+
+void sched_yield(void) {
+  acquire(&sched.lock);
+  if (curproc()->state == RUNNING) {
+    
+  }
+  sched_switch_out();
+  release(&sched.lock);
+}

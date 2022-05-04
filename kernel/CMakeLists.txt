@@ -5,6 +5,7 @@ add_library(kernel OBJECT
         src/arch/x86/asm/multiboot.s
         src/arch/x86/asm/trap.s
         src/arch/x86/asm/vector.s
+        src/arch/x86/asm/swtch.s
 
         src/arch/x86/console.c
         src/arch/x86/interrupt.c

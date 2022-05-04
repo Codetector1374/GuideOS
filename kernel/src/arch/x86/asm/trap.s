@@ -4,7 +4,7 @@
 
 .extern handle_interrupt
 .globl trap_enter_all
-.globl return_to_trapframe
+.globl return_from_isr
 
 trap_enter_all:
     push r15
@@ -43,7 +43,3 @@ return_from_isr:
     pop r15
     add rsp, 16 # Pop trap_no and fake error_code
     iretq
-
-return_to_trapframe:
-    mov rsp, rdi
-    jmp return_from_isr
