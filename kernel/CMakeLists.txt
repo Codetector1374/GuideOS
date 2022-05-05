@@ -41,6 +41,7 @@ add_library(kernel OBJECT
         src/util/string.c
         src/util/helpers.c
         src/util/fifo.c
+        src/util/queue.c
 )
 
 target_link_libraries(kernel libsys)
