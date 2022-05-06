@@ -120,4 +120,7 @@ void dequeue_iterator_delete(dequeue_iterator_t* iter) {
     target_node->prev = NULL;
     iter->q->size--;
   }
+  if (iter->q->size == 0) {
+    iter->current_node = NULL;
+  }
 }

@@ -6,30 +6,23 @@
 #include "spinlock.h"
 #include "arch/x86/interrupt.h"
 #include "arch/x86/instructions.h"
+#include "util/queue.h"
 
-
-struct scheduler_queue_node {
-  struct proc* p;
-  struct scheduler_queue_node *next;
-};
-
-struct scheduler_queue {
-  size_t size;
-  struct scheduler_queue_node* head;
-  struct scheduler_queue_node* tail;
-};
 
 struct scheduler {
-  struct scheduler_queue ready_queue;
+  dequeue_t ready_queue;
+  dequeue_t waiting_queue;
+
   spinlock_t lock;
 } sched;
 
 void sched_init(void) {
   // Initialize Scheduler
   init_lock(&sched.lock, "sched");
-  sched.ready_queue.size = 0;
-  sched.ready_queue.head = NULL;
-  sched.ready_queue.tail = NULL;
+  acquire(&sched.lock);
+  dequeue_construct(&sched.ready_queue);
+  dequeue_construct(&sched.waiting_queue);
+  release(&sched.lock);
 }
 
 __attribute__((noreturn)) static void idle_function(void) {
@@ -71,25 +64,12 @@ static void sched_setup_idle_proc(struct proc* idleProc) {
   sched_create_kproc(idleProc, idle_function);
 }
 
-static void s_sched_add(struct proc* proc) {
-  struct scheduler_queue_node* node = kmalloc(sizeof(struct scheduler_queue_node));
-  node->p = proc;
-  node->next = NULL;
-  if (sched.ready_queue.size == 0) {
-    sched.ready_queue.head = node;
-  } else {
-    sched.ready_queue.tail->next = node;
-  }
-  sched.ready_queue.tail = node;
-  sched.ready_queue.size++;
-}
-
 void sched_add(struct proc* proc) {
   if (proc->state != RUNNABLE) {
     panic("sched_add not ready");
   }
   acquire(&sched.lock);
-  s_sched_add(proc);
+  dequeue_push_back(&sched.ready_queue, proc);
   release(&sched.lock);
 }
 
@@ -112,14 +92,7 @@ void sched_start(void) {
     p = NULL;
 
     if (sched.ready_queue.size > 0) {
-      sched.ready_queue.size--;
-      struct scheduler_queue_node* head = sched.ready_queue.head;
-      p = head->p;
-      sched.ready_queue.head = head->next;
-      if (sched.ready_queue.size == 0) {
-        sched.ready_queue.tail = NULL;
-      }
-      kfree(head);
+      p = dequeue_pop_front(&sched.ready_queue);
     }
 
     if (p == NULL) {
@@ -135,10 +108,13 @@ void sched_start(void) {
     // Here when the proc done running
     vmm_load_ktable();
     if ((c->proc != NULL) && 
-        (c->proc->state == RUNNABLE) && 
         (c->proc != &idle_proc[cpu_id()])) {
-      // Add current proc to ready queue if it is marked runnable
-      s_sched_add(c->proc);
+        // Add current proc to ready queue if it is marked runnable else goes in waiting queue
+      if (c->proc->state == RUNNABLE) {
+        dequeue_push_back(&sched.ready_queue, c->proc);
+      } else {
+        dequeue_push_back(&sched.waiting_queue, c->proc);
+      }
     }
     c->proc = NULL;
   }
@@ -166,8 +142,49 @@ void sched_switch_out(void) {
 void sched_yield(void) {
   acquire(&sched.lock);
   if (curproc()->state == RUNNING) {
-    
+    curproc()->state = RUNNABLE;
   }
   sched_switch_out();
+  release(&sched.lock);
+}
+
+void sched_sleep(void* chan, spinlock_t *lk) {
+  struct proc* p = curproc();
+  if (p == NULL) {
+    panic("sched_sleep");
+  }
+  if (lk == NULL) {
+    panic("sleep w/o lock");
+  }
+
+  if (lk != &sched.lock) {
+    acquire(&sched.lock);
+    release(lk);
+  }
+
+  p->chan = chan;
+  p->state = SLEEPING;
+
+  sched_switch_out();
+
+  p->chan = NULL;
+
+  if (lk != &sched.lock) {
+    acquire(lk);
+    release(&sched.lock);
+  }
+}
+
+void sched_wakeup(void* chan) {
+  acquire(&sched.lock);
+  dequeue_iterator_t iter;
+  dequeue_iterator(&sched.waiting_queue, &iter);
+  while(dequeue_iterator_has_next(&iter)) {
+    struct proc* p = dequeue_iterator_next(&iter);
+    if (p->chan == chan) {
+      dequeue_iterator_delete(&iter);
+      dequeue_push_back(&sched.ready_queue, p);
+    }
+  }
   release(&sched.lock);
 }

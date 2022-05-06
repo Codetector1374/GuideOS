@@ -8,6 +8,7 @@
 #include "string.h"
 #include "util/fifo.h"
 #include "types.h"
+#include "proc.h"
 
 #define NUM_COL 80
 #define NUM_ROW 25
@@ -25,14 +26,15 @@ static bool uart_enable;
 // console_lock for reading operation and 
 // console_fifo_write_lock for write operation.
 //
+static spinlock_t console_read_lock;
 static spsc_fifo_t console_fifo;
-static spinlock_t console_fifo_write_lock;
 
-#define CON_FIFO_SIZE 16
+#define CON_FIFO_SIZE 32
 
 void console_init() {
   init_lock(&console_lock, "console");
-  init_lock(&console_fifo_write_lock, "console fifo");
+
+  init_lock(&console_read_lock, "console read");
   u8 *con_buffer = kmalloc(CON_FIFO_SIZE); // CON_FIFO_SIZE byte buffer is quite large for console
   if (!con_buffer) panic("console init oom");
   spsc_fifo_init(&console_fifo, con_buffer, CON_FIFO_SIZE);
@@ -99,29 +101,29 @@ void putchar(int c) {
 void console_isr_handler(void) {
   if (uart_enable) {
     int uartc;
-    acquire(&console_fifo_write_lock);
+    acquire(&console_read_lock);
     while ((uartc = uart_getc(&con_uart)) >= 0) {
       if (spsc_fifo_write(&console_fifo, (char)uartc)) {
         panic("uart buffer full\n");
       }
     }
-    release(&console_fifo_write_lock);
+    sched_wakeup(&console_fifo);
+    release(&console_read_lock);
   }
 }
 
 int console_getc(void) {
   int rtn;
   u8 val;
-  acquire(&console_lock);
-  if (spsc_fifo_read(&console_fifo, &val) < 0) {
-    rtn = -1;
-  } else {
-    // Filter Char
-    rtn = val;
-    if (val == 0x7F || val == 0x08) {
-      rtn = BACKSPACE;
-    }
+  acquire(&console_read_lock);
+  while (spsc_fifo_read(&console_fifo, &val) < 0) {
+    sched_sleep(&console_fifo, &console_read_lock);
+  } 
+  // Filter Char
+  rtn = val;
+  if (val == 0x7F || val == 0x08) {
+    rtn = BACKSPACE;
   }
-  release(&console_lock);
+  release(&console_read_lock);
   return rtn;
 }

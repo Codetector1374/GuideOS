@@ -5,11 +5,7 @@
 
 
 static uint64_t sys_yield(trapframe_t *tf) {
-  struct proc* p = curproc();
-  push_int_disable();
-  if (p->state == RUNNING)
-    p->state = RUNNABLE;
-  pop_int_disable();
+  sched_yield();
   return 0;
 }
 

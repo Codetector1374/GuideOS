@@ -5,6 +5,7 @@
 #include "mem/vm.h"
 #include "arch/x86/vmm.h"
 #include "arch/x86/interrupt.h"
+#include "spinlock.h"
 
 enum proc_state { UNUSED, CREATION, SLEEPING, RUNNABLE, RUNNING, ZOMBIE};
 enum proc_type { KERNEL, USER };
@@ -52,3 +53,5 @@ void sched_ctxsw(struct proc_context **old, const struct proc_context *new);
 void sched_kentry(void);
 void sched_switch_out(void);
 void sched_yield(void);
+void sched_sleep(void* chan, spinlock_t *lk);
+void sched_wakeup(void* chan);

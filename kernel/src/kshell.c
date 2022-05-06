@@ -2,6 +2,7 @@
 #include "defs.h"
 #include "arch/x86/instructions.h"
 #include "usys.h"
+#include "proc.h"
 
 #define CMD_MAX_LEN 1024
 
@@ -14,9 +15,9 @@ void kshell_main(void) {
     kprintf("$> ");
     for(;;) {
       int c;
-      wait_for_interrupt();
-      while((c = console_getc()) < 0) {
-        yield();
+      c = console_getc();
+      if (c < 0) {
+        panic("getc");
       }
       if (c == BACKSPACE && input_len > 0) {
         input_len--;
