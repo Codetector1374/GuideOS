@@ -30,4 +30,6 @@ long strtol(const char *s, char **endptr, int base);
 char *safestrcpy(char *s, char *t, size_t n);
 char *strncpy(char *s, const char *t, size_t n);
 
+char *strtok(char* base, const char* delims);
+
 #endif //GUIDE_OS_STRING_H
