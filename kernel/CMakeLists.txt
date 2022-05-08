@@ -48,7 +48,7 @@ target_link_libraries(kernel libsys)
 
 target_include_directories(kernel PRIVATE include)
 
-set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64 -Wall -Werror-implicit-function-declaration")
+set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector -mcmodel=large -mgeneral-regs-only -m64 -Wall -Werror-implicit-function-declaration -fdata-sections -ffunction-sections")
 set(CMAKE_ASM_FLAGS "-m64 -x assembler-with-cpp")
 
 set(CMAKE_C_FLAGS_RELEASE "-O2")
@@ -56,7 +56,7 @@ set(CMAKE_C_FLAGS_DEBUG "-O2 -ggdb")
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj
-        COMMAND ${CMAKE_LINKER} -m elf_x86_64 -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj
+        COMMAND ${CMAKE_LINKER} -m elf_x86_64 -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld -o ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj --gc-sections
                 $<TARGET_OBJECTS:kernel>
                 $<TARGET_FILE:libsys>
         COMMAND ${CMAKE_OBJDUMP} -M intel -S ${CMAKE_CURRENT_BINARY_DIR}/kernel.obj > ${CMAKE_CURRENT_BINARY_DIR}/kernel.asm
