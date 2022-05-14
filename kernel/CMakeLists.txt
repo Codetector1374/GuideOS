@@ -3,10 +3,20 @@ project(kernel ASM C)
 add_library(kernel OBJECT
         src/arch/x86_64/asm/bsp_init.s
         src/arch/x86_64/asm/multiboot.s
-        src/kmain.c src/arch/x86_64/console.c src/util/kprintf.c src/util/string.c)
 
-set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -mcmodel=large -m64")
-set(CMAKE_ASM_FLAGS "-m64")
+        src/kmain.c 
+
+        src/arch/x86_64/console.c 
+
+        src/util/kprintf.c 
+        src/util/string.c)
+
+
+set(CMAKE_C_FLAGS "-static -fno-pic -ffreestanding -fno-stack-protector \
+        -mcmodel=large -mgeneral-regs-only -m64 -Wall \
+        -Werror-implicit-function-declaration \
+        -fdata-sections -ffunction-sections")
+set(CMAKE_ASM_FLAGS "-m64 -x assembler-with-cpp")
 
 set(CMAKE_C_FLAGS_RELEASE "-O2")
 set(CMAKE_C_FLAGS_DEBUG "-O2 -ggdb3")

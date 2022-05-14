@@ -85,7 +85,6 @@ calc_start_sector:
     shr     eax, 4
     mov     WORD PTR [dab_target_seg], ax
 
-magic:
     mov     dx, [drive_number]
     mov     si, offset disk_address_block
     mov     ah, 0x42
