@@ -1,20 +1,21 @@
 .intel_syntax noprefix
 
 .extern kmain
+.globl kentry
+.globl raw_entry
 
 
 .code32
-.section .text.raw_init
+.section .raw_init, "ax"
 raw_entry:
     mov     eax, 0xb0bacafe
     mov     ebx, 0
-    jmp     _start
+    jmp     kentry
 
-.code32
-.section .text.bootstrap
-
-.globl _start
-_start:
+.section .bootstrap, "ax"
+.align 8
+kentry:
+    cli
     mov esp, 0x10000
     push ebx
     push eax
@@ -49,15 +50,24 @@ _start:
 .code64
 
 long_start:
-    xor     ax, ax
+    mov     ax, 0x10
     mov     ds, ax
     mov     es, ax
     mov     ss, ax
     mov     fs, ax
     mov     gs, ax
+    mov     rax, 0xFFFF800000000000
+    add     rax, OFFSET gdt64
+    mov     [gdtdesc_addr], rax
+    movabs  rax, OFFSET gdtdesc
+    mov     rcx, 0xFFFF800000000000
+    add     rax, rcx
+    lgdt    [rax]
 
     mov     rdi, DWORD [rsp]
     mov     rsi, DWORD [rsp + 4]
+    mov     rbp, 0xFFFF800000000000
+    mov     rsp, 0xFFFF800000000000 + 0x10000
     movabs  rax, OFFSET kmain
     call    rax
 
@@ -67,27 +77,18 @@ halt:
 
 gdt64:
     # Null Entry
-    .short   0, 0
-    .byte    0,0,0,0
+    .quad   0
 
-    # Code Segment
-    .short 0xFFFF, 0
-    .byte 0
-    .byte 0b10011010
-    .byte 0b11101111
-    .byte 0
+    .quad (1<<53) | (1<<47) | (1<<44) | (1<<43) # Flags:L, Access: P, Access: S, Access: E
 
-    # Data Segment
-    .short 0xFFFF, 0
-    .byte 0
-    .byte 0b10010010
-    .byte 0b11101111
-    .byte 0
+    .quad (1<<53) | (1<<47) | (1<<44) | (1<<41) # Flags:L, Access: P, Access: S, Access: RW
 
 gdtdesc:
     .short   (gdtdesc - gdt64 - 1)
+gdtdesc_addr:
     .quad   gdt64
 
+.section .bootstrap.data, "wa"
 .align 4096
 pml4:
 .fill 512, 8, 0
