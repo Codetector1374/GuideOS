@@ -16,7 +16,7 @@ raw_entry:
 .align 8
 kentry:
     cli
-    mov esp, 0x10000
+    mov esp, 0x100000
     push ebx
     push eax
 
