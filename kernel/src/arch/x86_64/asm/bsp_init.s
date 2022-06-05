@@ -16,7 +16,7 @@ raw_entry:
 .align 8
 kentry:
     cli
-    mov esp, 0x100000
+    mov esp, 0x80000
     push ebx
     push eax
 
@@ -60,6 +60,7 @@ long_start:
     mov     ss, ax
     mov     fs, ax
     mov     gs, ax
+
     mov     rax, 0xFFFF800000000000
     add     rax, OFFSET gdt64
     mov     [gdtdesc_addr], rax
@@ -70,8 +71,9 @@ long_start:
 
     mov     rdi, DWORD [rsp]
     mov     rsi, DWORD [rsp + 4]
-    mov     rbp, 0xFFFF800000000000
-    mov     rsp, 0xFFFF800000000000 + 0x10000
+    mov     rbp, 0xFFFFFFFFFFFFFFFF
+    mov     rsp, 0xFFFF800000000000 + 0x80000
+
     movabs  rax, OFFSET kmain
     call    rax
 
